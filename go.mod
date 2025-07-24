@@ -1,4 +1,4 @@
-module github.com/LxHTT/Eta-Panel/core
+module github.com/EtaPanel-dev/Eta-Panel/core
 
 go 1.24.0
 

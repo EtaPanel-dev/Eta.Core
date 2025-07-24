@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/LxHTT/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
 	"net/http"
 	"time"
 
@@ -17,7 +17,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func login(c *gin.Context) {
+func Login(c *gin.Context) {
 
 	var loginData struct {
 		Username string `json:"username"`
@@ -28,7 +28,7 @@ func login(c *gin.Context) {
 		return
 	}
 	if bcrypt.CompareHashAndPassword([]byte("$2a$10$..."), []byte(loginData.Password)) != nil {
-		handler.Respond(c, http.StatusUnauthorized, "Incorrect password", 401)
+		handler.Respond(c, http.StatusUnauthorized, "密码错误", 401)
 		return
 	}
 
@@ -45,12 +45,12 @@ func login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtSecret)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, "Generate token failed", nil)
+		handler.Respond(c, http.StatusInternalServerError, "生成密钥失败", nil)
 		return
 	}
 
 	handler.Respond(c, http.StatusOK, gin.H{
 		"token":      tokenString,
 		"expires_at": expirationTime.Unix(),
-	}, nil)
+	}, "登录成功")
 }

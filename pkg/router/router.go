@@ -1,9 +1,12 @@
 package router
 
 import (
-	"github.com/LxHTT/Eta-Panel/core/pkg/extend/pty"
-	"github.com/LxHTT/Eta-Panel/core/pkg/handler/file"
-	"github.com/LxHTT/Eta-Panel/core/pkg/middleware"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/extend/pty"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/auth"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/crontab"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/file"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/system"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +24,7 @@ func LoadRoutes(r *gin.Engine) {
 		apiPublicRouter.GET("/", func(c *gin.Context) {
 			c.JSON(200, gin.H{"code": 200, "message": "Eta Panel API Server Is OK!"})
 		})
+		apiPublicRouter.POST("/login", auth.Login)
 	}
 
 	// 授权api
@@ -41,6 +45,25 @@ func LoadRoutes(r *gin.Engine) {
 			apiFileRouter.POST("/permissions", file.SetPermissions)
 			apiFileRouter.GET("/content", file.GetFileContent)
 			apiFileRouter.POST("/content", file.SaveFileContent)
+		}
+		apiSysRouter := apiAuthRouter.Group("/system")
+		{
+			// 系统监控
+			apiSysRouter.GET("/", system.GetSystemInfo)
+			apiSysRouter.GET("/cpu", system.GetCPUInfo)
+			apiSysRouter.GET("/memory", system.GetMemoryInfo)
+			apiSysRouter.GET("/disk", system.GetDiskInfo)
+			apiSysRouter.GET("/network", system.GetNetworkInfo)
+			apiSysRouter.GET("/processes", system.GetProcessList)
+			apiSysRouter.POST("/process/kill", system.KillProcess)
+		}
+		apiCronRouter := apiAuthRouter.Group("/crontab")
+		{
+			apiCronRouter.GET("/", crontab.GetCrontabList)
+			apiCronRouter.POST("/", crontab.CreateCrontabEntry)
+			apiCronRouter.PUT("/:id", crontab.UpdateCrontabEntry)
+			apiCronRouter.DELETE("/:id", crontab.DeleteCrontabEntry)
+			apiCronRouter.POST("/:id/toggle", crontab.ToggleCrontabEntry)
 		}
 	}
 

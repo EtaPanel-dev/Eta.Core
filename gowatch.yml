@@ -1,4 +1,4 @@
-appname: "github.com/LxHTT/Eta-Panel/core"
+appname: "github.com/EtaPanel-dev/Eta-Panel/core"
 output: "eta"
 watch_exts:
   - .toml
@@ -8,4 +8,4 @@ watch_exts:
 vendor_watch: false
 disable_run: false
 go_install: true
-build_pkg: "github.com/LxHTT/Eta-Panel/core/cmd"
+build_pkg: "github.com/EtaPanel-dev/Eta-Panel/core/cmd"

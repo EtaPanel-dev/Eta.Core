@@ -4,9 +4,9 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
-	"github.com/LxHTT/Eta-Panel/core/pkg/handler"
-	"github.com/LxHTT/Eta-Panel/core/pkg/models"
 	"fmt"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
 	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"
@@ -33,13 +33,13 @@ func ListFiles(c *gin.Context) {
 	path := c.DefaultQuery("path", "/home")
 
 	if isProtectedPath(path) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Path is protected"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	files, err := os.ReadDir(path)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
@@ -77,23 +77,23 @@ func ListFiles(c *gin.Context) {
 func DownloadFile(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "File path cannot be empty"}, nil)
+		handler.Respond(c, http.StatusBadRequest, "参数为空", nil)
 		return
 	}
 
 	if isProtectedPath(filePath) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	info, err := os.Stat(filePath)
 	if err != nil {
-		handler.Respond(c, http.StatusNotFound, gin.H{"error": "File not found"}, nil)
+		handler.Respond(c, http.StatusNotFound, "文件不存在", nil)
 		return
 	}
 
 	if info.IsDir() {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Failed to download folder"}, nil)
+		handler.Respond(c, http.StatusBadRequest, "文件夹不允许下载", nil)
 		return
 	}
 
@@ -112,13 +112,13 @@ func UploadFile(c *gin.Context) {
 	}
 
 	if isProtectedPath(targetDir) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Failed to fetch uploads"}, nil)
+		handler.Respond(c, http.StatusBadRequest, "获取上传文件失败", nil)
 		return
 	}
 	defer func(file multipart.File) {
@@ -132,7 +132,7 @@ func UploadFile(c *gin.Context) {
 
 	out, err := os.Create(targetPath)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": "Failed to create file"}, nil)
+		handler.Respond(c, http.StatusInternalServerError, "创建文件失败", nil)
 		return
 	}
 	defer func(out *os.File) {
@@ -144,11 +144,11 @@ func UploadFile(c *gin.Context) {
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": "Failed to save file"}, nil)
+		handler.Respond(c, http.StatusInternalServerError, "保存文件失败", nil)
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": "Upload success", "path": targetPath}, nil)
+	handler.Respond(c, http.StatusOK, "上传成功", nil)
 }
 
 // MoveFile 移动文件
@@ -159,22 +159,22 @@ func MoveFile(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Invalid request"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if isProtectedPath(req.Source) || isProtectedPath(req.Target) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	err := os.Rename(req.Source, req.Target)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": "Move success"}, nil)
+	handler.Respond(c, http.StatusOK, "移动成功", nil)
 }
 
 // CopyFile 复制文件
@@ -185,22 +185,22 @@ func CopyFile(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Invalid request"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if isProtectedPath(req.Source) || isProtectedPath(req.Target) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	err := copyFile(req.Source, req.Target)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": "Copy success"}, nil)
+	handler.Respond(c, http.StatusOK, "复制成功", nil)
 }
 
 func copyFile(src, dst string) error {
@@ -234,22 +234,22 @@ func copyFile(src, dst string) error {
 func DeleteFile(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Invalid request"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if isProtectedPath(filePath) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	err := os.RemoveAll(filePath)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": "Deleted"}, nil)
+	handler.Respond(c, http.StatusOK, "删除成功", nil)
 }
 
 // CreateDirectory 创建目录
@@ -260,24 +260,24 @@ func CreateDirectory(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusBadRequest, "拒绝访问", nil)
 		return
 	}
 
 	fullPath := filepath.Join(req.Path, req.Name)
 
 	if isProtectedPath(fullPath) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
 	err := os.MkdirAll(fullPath, 0755)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": nil, "path": fullPath}, nil)
+	handler.Respond(c, http.StatusOK, "创建成功", nil)
 }
 
 // CompressFiles 压缩文件
@@ -289,12 +289,12 @@ func CompressFiles(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Invalid request"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if isProtectedPath(req.OutputPath) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
@@ -307,16 +307,16 @@ func CompressFiles(c *gin.Context) {
 	case "tar.gz":
 		err = createTarGz(req.Files, req.OutputPath)
 	default:
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Format not supported"}, nil)
+		handler.Respond(c, http.StatusBadRequest, "格式不支持", nil)
 		return
 	}
 
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": nil, "path": req.OutputPath}, nil)
+	handler.Respond(c, http.StatusOK, "压缩完毕", nil)
 }
 
 func createZip(files []string, output string) error {
@@ -503,12 +503,12 @@ func ExtractFiles(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "Invalid request"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	if isProtectedPath(req.FilePath) || isProtectedPath(req.OutputPath) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "Operation not permitted"}, nil)
+		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
 		return
 	}
 
@@ -531,7 +531,7 @@ func ExtractFiles(c *gin.Context) {
 	}
 
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 

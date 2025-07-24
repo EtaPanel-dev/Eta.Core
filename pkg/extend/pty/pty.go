@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/LxHTT/Eta-Panel/core/pkg/extend/ws"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/extend/ws"
 	"github.com/gorilla/websocket"
 )
 
@@ -96,7 +96,7 @@ func (h *PTYHandler) HandleConnection(conn *ws.Connection) error {
 		Type: "info",
 		Data: OutputMessage{
 			Type:   "info",
-			Data:   "PTY session started. Session ID: " + conn.ID,
+			Data:   "PTY session started. Session Id: " + conn.ID,
 			Status: "connected",
 		},
 	}

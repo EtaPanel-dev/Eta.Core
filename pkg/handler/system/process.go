@@ -1,9 +1,9 @@
 package system
 
 import (
-	"github.com/LxHTT/Eta-Panel/core/pkg/handler"
-	"github.com/LxHTT/Eta-Panel/core/pkg/models"
 	"fmt"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -38,7 +38,7 @@ func getProcessCount() int {
 // GetProcessList 获取进程列表
 func GetProcessList(c *gin.Context) {
 	processes := getProcessList()
-	handler.Respond(c, http.StatusOK, gin.H{"processes": processes}, nil)
+	handler.Respond(c, http.StatusOK, nil, gin.H{"processes": processes})
 }
 
 // KillProcess 终止进程
@@ -49,18 +49,18 @@ func KillProcess(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "请求参数错误"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, gin.H{"error": "请求参数错误"})
 		return
 	}
 
 	if req.PID <= 0 {
-		handler.Respond(c, http.StatusBadRequest, gin.H{"error": "无效的进程ID"}, nil)
+		handler.Respond(c, http.StatusBadRequest, nil, gin.H{"error": "无效的进程ID"})
 		return
 	}
 
 	// 检查是否为系统关键进程
 	if isSystemCriticalProcess(req.PID) {
-		handler.Respond(c, http.StatusForbidden, gin.H{"error": "无法终止系统关键进程"}, nil)
+		handler.Respond(c, http.StatusForbidden, nil, gin.H{"error": "无法终止系统关键进程"})
 		return
 	}
 
@@ -72,11 +72,11 @@ func KillProcess(c *gin.Context) {
 
 	err := killProcess(req.PID, signal)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, gin.H{"error": err.Error()}, nil)
+		handler.Respond(c, http.StatusInternalServerError, nil, gin.H{"error": err.Error()})
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{"message": fmt.Sprintf("进程 %d 已发送 %s 信号", req.PID, signal)}, nil)
+	handler.Respond(c, http.StatusOK, fmt.Sprintf("进程 %d 已发送 %s 信号", req.PID, signal), nil)
 }
 
 // killProcess 终止进程
@@ -189,7 +189,7 @@ func getProcessInfo(pid int) *models.ProcessInfo {
 		return nil
 	}
 
-	process := &models.ProcessInfo{PID: pid}
+	process := &models.ProcessInfo{PId: pid}
 
 	// 读取进程状态
 	if data, err := ioutil.ReadFile(procPath + "/stat"); err == nil {

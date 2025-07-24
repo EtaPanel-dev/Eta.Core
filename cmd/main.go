@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/LxHTT/Eta-Panel/core/pkg/config"
-	"github.com/LxHTT/Eta-Panel/core/pkg/database"
-	"github.com/LxHTT/Eta-Panel/core/pkg/router"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/config"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/router"
 	"github.com/gin-gonic/gin"
 	"log"
 )

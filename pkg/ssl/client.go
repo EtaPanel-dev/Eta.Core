@@ -6,7 +6,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/LxHTT/Eta-Panel/core/pkg/models/ssl"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"

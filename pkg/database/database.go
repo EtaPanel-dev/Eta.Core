@@ -2,14 +2,16 @@ package database
 
 import (
 	"fmt"
-	"github.com/LxHTT/Eta-Panel/core/pkg/config"
-	"github.com/LxHTT/Eta-Panel/core/pkg/models"
-	"github.com/LxHTT/Eta-Panel/core/pkg/models/ssl"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/config"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
 	"gorm.io/driver/mysql"
 	"log"
 
 	"gorm.io/gorm"
 )
+
+var DbConn *gorm.DB
 
 func InitDb() *Database {
 	Db := new(Database)
@@ -25,10 +27,10 @@ func (d *Database) Connect() error {
 		dbConfig.Port,
 		dbConfig.Database)
 
-	DbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DbC, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	// 自动迁移数据库表
-	err = DbConn.AutoMigrate(
+	err = DbC.AutoMigrate(
 		&models.User{},
 		&models.Server{},
 		&models.AuthToken{},
@@ -41,7 +43,8 @@ func (d *Database) Connect() error {
 		return err
 	}
 
-	d.DbConn = DbConn
+	d.DbConn = DbC
+	DbConn = DbC
 
 	return nil
 }

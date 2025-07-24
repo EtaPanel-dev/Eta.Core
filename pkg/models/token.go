@@ -7,7 +7,7 @@ import (
 
 type AuthToken struct {
 	gorm.Model
-	ID        uint      `json:"id" gorm:"primaryKey"`
+	Id        uint      `json:"id" gorm:"primaryKey"`
 	Token     string    `json:"token" gorm:"unique;not null"`
 	Ua        string    `json:"ua" gorm:"unique;not null"`
 	ExpiresAt time.Time `json:"expires_at"`

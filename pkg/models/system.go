@@ -1,7 +1,7 @@
 package models
 
 type ProcessInfo struct {
-	PID     int     `json:"pid"`
+	PId     int     `json:"pid"`
 	Name    string  `json:"name"`
 	State   string  `json:"state"`
 	CPU     float64 `json:"cpu"`
@@ -15,14 +15,14 @@ type InterfaceStats struct {
 	TxPackets uint64
 }
 type SystemInfo struct {
-	CPU     CPUInfo     `json:"cpu"`
+	Cpu     CpuInfo     `json:"cpu"`
 	Memory  MemoryInfo  `json:"memory"`
 	Disk    []DiskInfo  `json:"disk"`
 	Network NetworkInfo `json:"network"`
 	System  OSInfo      `json:"system"`
 }
 
-type CPUInfo struct {
+type CpuInfo struct {
 	Cores       int       `json:"cores"`
 	Model       string    `json:"model"`
 	Usage       float64   `json:"usage"`
@@ -42,8 +42,8 @@ type MemoryInfo struct {
 
 type DiskInfo struct {
 	Device      string  `json:"device"`
-	Mountpoint  string  `json:"mountpoint"`
-	Fstype      string  `json:"fstype"`
+	MountPoint  string  `json:"mountPoint"`
+	FsType      string  `json:"fsType"`
 	Total       uint64  `json:"total"`
 	Used        uint64  `json:"used"`
 	Available   uint64  `json:"available"`
@@ -58,7 +58,7 @@ type NetworkInfo struct {
 type NetworkInterface struct {
 	Name      string   `json:"name"`
 	Addresses []string `json:"addresses"`
-	MTU       int      `json:"mtu"`
+	Mtu       int      `json:"mtu"`
 	Flags     []string `json:"flags"`
 	RxBytes   uint64   `json:"rxBytes"`
 	TxBytes   uint64   `json:"txBytes"`
@@ -71,7 +71,7 @@ type NetworkConnection struct {
 	LocalAddr  string `json:"localAddr"`
 	RemoteAddr string `json:"remoteAddr"`
 	State      string `json:"state"`
-	PID        int    `json:"pid"`
+	PId        int    `json:"pid"`
 }
 
 type OSInfo struct {

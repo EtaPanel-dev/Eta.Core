@@ -7,7 +7,7 @@ import (
 
 type Server struct {
 	gorm.Model
-	ID          uint      `json:"id" gorm:"primaryKey"`
+	Id          uint      `json:"id" gorm:"primaryKey"`
 	Name        string    `json:"name" gorm:"not null"`
 	IP          string    `json:"ip" gorm:"not null"`
 	Username    string    `json:"username"`

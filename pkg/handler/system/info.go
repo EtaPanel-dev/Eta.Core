@@ -1,9 +1,9 @@
 package system
 
 import (
-	"github.com/LxHTT/Eta-Panel/core/pkg/handler"
-	"github.com/LxHTT/Eta-Panel/core/pkg/models"
 	"fmt"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net"
@@ -19,7 +19,7 @@ import (
 // GetSystemInfo 获取系统信息
 func GetSystemInfo(c *gin.Context) {
 	info := models.SystemInfo{
-		CPU:     getCPUInfo(),
+		Cpu:     getCPUInfo(),
 		Memory:  getMemoryInfo(),
 		Disk:    getDiskInfo(),
 		Network: getNetworkInfo(),
@@ -30,8 +30,8 @@ func GetSystemInfo(c *gin.Context) {
 }
 
 // getCPUInfo 获取CPU信息
-func getCPUInfo() models.CPUInfo {
-	cpuInfo := models.CPUInfo{
+func getCPUInfo() models.CpuInfo {
+	cpuInfo := models.CpuInfo{
 		Cores: runtime.NumCPU(),
 	}
 
@@ -199,8 +199,8 @@ func getDiskInfo() []models.DiskInfo {
 
 					diskInfo := models.DiskInfo{
 						Device:      device,
-						Mountpoint:  mountpoint,
-						Fstype:      fstype,
+						MountPoint:  mountpoint,
+						FsType:      fstype,
 						Total:       total,
 						Used:        used,
 						Available:   available,
@@ -238,7 +238,7 @@ func getNetworkInterfaces() []models.NetworkInterface {
 	for _, iface := range ifaces {
 		netInterface := models.NetworkInterface{
 			Name: iface.Name,
-			MTU:  iface.MTU,
+			Mtu:  iface.MTU,
 		}
 
 		// 获取接口标志
@@ -448,20 +448,20 @@ func getOSInfo() models.OSInfo {
 
 // GetCPUInfo 单独获取CPU信息
 func GetCPUInfo(c *gin.Context) {
-	handler.Respond(c, http.StatusOK, getCPUInfo(), nil)
+	handler.Respond(c, http.StatusOK, nil, getCPUInfo())
 }
 
 // GetMemoryInfo 单独获取内存信息
 func GetMemoryInfo(c *gin.Context) {
-	handler.Respond(c, http.StatusOK, getMemoryInfo(), nil)
+	handler.Respond(c, http.StatusOK, nil, getMemoryInfo())
 }
 
 // GetDiskInfo 单独获取磁盘信息
 func GetDiskInfo(c *gin.Context) {
-	handler.Respond(c, http.StatusOK, getDiskInfo(), nil)
+	handler.Respond(c, http.StatusOK, nil, getDiskInfo())
 }
 
 // GetNetworkInfo 单独获取网络信息
 func GetNetworkInfo(c *gin.Context) {
-	handler.Respond(c, http.StatusOK, getNetworkInfo(), nil)
+	handler.Respond(c, http.StatusOK, nil, getNetworkInfo())
 }
