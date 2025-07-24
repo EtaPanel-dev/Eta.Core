@@ -1,0 +1,11 @@
+appname: "github.com/LxHTT/Eta-Panel/core"
+output: "eta"
+watch_exts:
+  - .toml
+  - .yml
+#cmd_args:
+#  - --debug
+vendor_watch: false
+disable_run: false
+go_install: true
+build_pkg: "github.com/LxHTT/Eta-Panel/core/cmd"
