@@ -364,7 +364,7 @@ func TestStandalonePTY_InputOutput(t *testing.T) {
 	// 输出所有消息以便调试
 	t.Logf("Received %d messages:", len(messages))
 	for i, msg := range messages {
-		t.Logf("Message %d: Type=%s, Data=%s, Status=%s, PID=%d", i, msg.Type, msg.Data, msg.Status, msg.PID)
+		t.Logf("Message %d: Type=%s, Data=%s, Status=%s, PId=%d", i, msg.Type, msg.Data, msg.Status, msg.PID)
 	}
 
 	// 至少应该有一些输出
@@ -452,7 +452,7 @@ func TestPTYManager(t *testing.T) {
 		t.Error("PTY test-1 should exist in manager")
 	}
 	if retrievedPTY.ID != "test-manager-1" {
-		t.Error("Retrieved PTY has wrong ID")
+		t.Error("Retrieved PTY has wrong Id")
 	}
 
 	// 测试获取所有PTY
