@@ -5,6 +5,8 @@ import (
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/auth"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/crontab"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/file"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/nginx"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/ssl"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler/system"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/middleware"
 	"github.com/gin-gonic/gin"
@@ -64,6 +66,43 @@ func LoadRoutes(r *gin.Engine) {
 			apiCronRouter.PUT("/:id", crontab.UpdateCrontabEntry)
 			apiCronRouter.DELETE("/:id", crontab.DeleteCrontabEntry)
 			apiCronRouter.POST("/:id/toggle", crontab.ToggleCrontabEntry)
+		}
+		apiSslRouter := apiAuthRouter.Group("/acme/ssl")
+		{
+			apiSslRouter.GET("/", ssl.GetSSL)
+			apiSslRouter.POST("/", ssl.IssueSSL)
+			apiSslRouter.DELETE("/:id", ssl.DeleteSSL)
+			apiSslRouter.PUT("/:id", ssl.UpdateSSL)
+		}
+		apiSslClientRouter := apiAuthRouter.Group("/acme/clients")
+		{
+			apiSslClientRouter.GET("/", ssl.GetAcmeClients)
+			apiSslClientRouter.POST("/", ssl.CreateAcmeClient)
+			apiSslClientRouter.PUT("/:id", ssl.UpdateAcmeClient)
+			apiSslClientRouter.DELETE("/:id", ssl.DeleteAcmeClient)
+		}
+		apiSslDnsRouter := apiAuthRouter.Group("/acme/dns")
+		{
+			apiSslDnsRouter.GET("/", ssl.GetDnsAccounts)
+			apiSslDnsRouter.POST("/", ssl.CreateDnsAccount)
+			apiSslDnsRouter.PUT("/:id", ssl.UpdateDnsAccount)
+			apiSslDnsRouter.DELETE("/:id", ssl.DeleteDnsAccount)
+		}
+		apiNginxRouter := apiAuthRouter.Group("/nginx")
+		{
+			// Nginx管理
+			apiNginxRouter.GET("/status", nginx.GetNginxStatus)
+			apiNginxRouter.GET("/config", nginx.GetNginxConfig)
+			apiNginxRouter.PUT("/config", nginx.UpdateNginxConfig)
+			apiNginxRouter.POST("/config/reset", nginx.ResetNginxConfig)
+			apiNginxRouter.GET("/sites", nginx.GetNginxSites)
+			apiNginxRouter.POST("/sites", nginx.CreateNginxSite)
+			apiNginxRouter.PUT("/sites/:id", nginx.UpdateNginxSite)
+			apiNginxRouter.DELETE("/sites/:id", nginx.DeleteNginxSite)
+			apiNginxRouter.POST("/sites/:id/toggle", nginx.ToggleNginxSite)
+			apiNginxRouter.POST("/restart", nginx.RestartNginx)
+			apiNginxRouter.POST("/reload", nginx.ReloadNginx)
+			apiNginxRouter.POST("/test", nginx.TestNginxConfig)
 		}
 	}
 

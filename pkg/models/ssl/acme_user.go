@@ -10,8 +10,8 @@ import (
 type AcmeUser struct {
 	gorm.Model
 	Email        string
-	Registration *registration.Resource
-	Key          crypto.PrivateKey
+	Registration *registration.Resource `gorm:"-"`
+	Key          crypto.PrivateKey      `gorm:"-"`
 }
 
 func (u *AcmeUser) GetEmail() string {

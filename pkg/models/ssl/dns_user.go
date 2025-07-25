@@ -273,3 +273,9 @@ func getDNSProviderConfig(dnsType DnsType, params string) (challenge.Provider, e
 	}
 	return p, nil
 }
+
+type CreateDnsAccountRequest struct {
+	ProviderId int    `json:"provider_id" binding:"required"`
+	Key        string `json:"key" binding:"required"`
+	Value      string `json:"value" binding:"required"`
+}

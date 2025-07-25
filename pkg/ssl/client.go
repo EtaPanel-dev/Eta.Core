@@ -115,9 +115,11 @@ func NewRegisterClient(acmeAccount *ssl.WebsiteAcmeAccount) (*ssl.AcmeClient, er
 	myUser.Registration = reg
 
 	acmeClient := &ssl.AcmeClient{
-		User:   myUser,
-		Client: client,
-		Config: config,
+		User:      myUser,
+		Client:    client,
+		Config:    config,
+		ServerURL: acmeAccount.CaDirURL,
+		KeyType:   acmeAccount.KeyType,
 	}
 
 	return acmeClient, nil
