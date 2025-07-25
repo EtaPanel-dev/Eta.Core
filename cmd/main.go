@@ -1,11 +1,15 @@
 package main
 
 import (
+	_ "github.com/EtaPanel-dev/Eta-Panel/core/cmd/api/docs"
+
 	"fmt"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/config"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/router"
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 )
 
@@ -21,14 +25,14 @@ func main() {
 	}
 
 	// 设置Gin模式
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 
 	// 创建Gin引擎
 	r := gin.Default()
 
 	// 加载路由
 	router.LoadRoutes(r)
-
+	r.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 启动服务器
 	addr := fmt.Sprintf("%s:%d", config.AppConfig.Server.Host, config.AppConfig.Server.Port)
 	fmt.Printf("Server starting on %s\n", addr)
