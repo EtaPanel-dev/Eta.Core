@@ -157,7 +157,12 @@ func (p *PostgreSQLManager) GetDatabases() ([]PostgreSQLDatabaseInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query databases: %w", err)
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	var databases []PostgreSQLDatabaseInfo
 	for rows.Next() {
@@ -216,7 +221,12 @@ func (p *PostgreSQLManager) GetTables() ([]PostgreSQLTableInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query tables: %w", err)
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	var tables []PostgreSQLTableInfo
 	for rows.Next() {
@@ -252,7 +262,12 @@ func (p *PostgreSQLManager) GetSchemas() ([]PostgreSQLSchemaInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query schemas: %w", err)
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	var schemas []PostgreSQLSchemaInfo
 	for rows.Next() {
@@ -455,7 +470,12 @@ func (p *PostgreSQLManager) GetUsers() ([]PostgreSQLUserInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query users: %w", err)
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	var users []PostgreSQLUserInfo
 	for rows.Next() {
@@ -480,7 +500,12 @@ func (p *PostgreSQLManager) ExecuteQuery(query string) ([]map[string]interface{}
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	columns, err := rows.Columns()
 	if err != nil {
