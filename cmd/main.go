@@ -11,14 +11,13 @@ import (
 
 func main() {
 
-	db := database.InitDb()
-	if err := db.Connect(); err != nil {
-		log.Fatalf("database connection error: %s", err)
-	}
-	
 	// 初始化配置
 	if err := config.Init(); err != nil {
 		log.Fatalf("Failed to initialize config: %v", err)
+	}
+	db := database.InitDb()
+	if err := db.Connect(); err != nil {
+		log.Fatalf("database connection error: %s", err)
 	}
 
 	// 设置Gin模式

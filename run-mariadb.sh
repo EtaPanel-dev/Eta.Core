@@ -1,1 +1,0 @@
-brew services start mariadb

@@ -18,11 +18,7 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Host     string `toml:"host"`
-	Port     int    `toml:"port"`
-	User     string `toml:"user"`
-	Pwd      string `toml:"pwd"`
-	Database string `toml:"database"`
+	Path string `toml:"path"` // SQLite 数据库文件路径
 }
 
 var AppConfig *Config
@@ -58,10 +54,7 @@ func createDefaultConfig() {
 			Port: 8080,
 		},
 		Database: DatabaseConfig{
-			Host: "localhost",
-			Port: 3306,
-			User: "root",
-			Pwd:  "password",
+			Path: "data.db",
 		},
 	}
 
