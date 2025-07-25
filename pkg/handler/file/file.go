@@ -5,9 +5,6 @@ import (
 	"archive/zip"
 	"compress/gzip"
 	"fmt"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
-	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -16,6 +13,10 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
+	"github.com/gin-gonic/gin"
 )
 
 // 检查路径是否受保护
@@ -29,6 +30,18 @@ func isProtectedPath(path string) bool {
 }
 
 // ListFiles 列出目录文件
+// @Summary 列出目录文件
+// @Description 获取指定目录下的文件和文件夹列表
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param path query string false "目录路径" default("/home")
+// @Success 200 {object} handler.Response{data=object{files=[]models.FileInfo,currentPath=string}} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files [get]
 func ListFiles(c *gin.Context) {
 	path := c.DefaultQuery("path", "/home")
 
@@ -74,6 +87,19 @@ func ListFiles(c *gin.Context) {
 }
 
 // DownloadFile 下载文件
+// @Summary 下载文件
+// @Description 下载指定路径的文件
+// @Tags 文件管理
+// @Accept json
+// @Produce application/octet-stream
+// @Security BearerAuth
+// @Param path query string true "文件路径"
+// @Success 200 {file} file "文件内容"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 404 {object} handler.Response "文件不存在"
+// @Router /api/auth/files/download [get]
 func DownloadFile(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -105,6 +131,20 @@ func DownloadFile(c *gin.Context) {
 }
 
 // UploadFile 上传文件
+// @Summary 上传文件
+// @Description 上传文件到指定目录
+// @Tags 文件管理
+// @Accept multipart/form-data
+// @Produce json
+// @Security BearerAuth
+// @Param path formData string true "目标目录路径"
+// @Param file formData file true "上传的文件"
+// @Success 200 {object} handler.Response "上传成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/upload [post]
 func UploadFile(c *gin.Context) {
 	targetDir := c.PostForm("path")
 	if targetDir == "" {
@@ -152,6 +192,19 @@ func UploadFile(c *gin.Context) {
 }
 
 // MoveFile 移动文件
+// @Summary 移动文件
+// @Description 将文件从源路径移动到目标路径
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{source=string,destination=string} true "源路径和目标路径"
+// @Success 200 {object} handler.Response "移动成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/move [post]
 func MoveFile(c *gin.Context) {
 	var req struct {
 		Source string `json:"source"`
@@ -178,6 +231,19 @@ func MoveFile(c *gin.Context) {
 }
 
 // CopyFile 复制文件
+// @Summary 复制文件
+// @Description 将文件从源路径复制到目标路径
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{source=string,destination=string} true "源路径和目标路径"
+// @Success 200 {object} handler.Response "复制成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/copy [post]
 func CopyFile(c *gin.Context) {
 	var req struct {
 		Source string `json:"source"`
@@ -231,6 +297,19 @@ func copyFile(src, dst string) error {
 }
 
 // DeleteFile 删除文件
+// @Summary 删除文件
+// @Description 删除指定路径的文件或目录
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param path query string true "文件路径"
+// @Success 200 {object} handler.Response "删除成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files [delete]
 func DeleteFile(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -253,6 +332,19 @@ func DeleteFile(c *gin.Context) {
 }
 
 // CreateDirectory 创建目录
+// @Summary 创建目录
+// @Description 在指定路径创建新目录
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{path=string} true "目录路径"
+// @Success 200 {object} handler.Response "创建成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/mkdir [post]
 func CreateDirectory(c *gin.Context) {
 	var req struct {
 		Path string `json:"path"`
@@ -281,6 +373,19 @@ func CreateDirectory(c *gin.Context) {
 }
 
 // CompressFiles 压缩文件
+// @Summary 压缩文件
+// @Description 将多个文件压缩为指定格式的压缩包
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{files=[]string,output=string,format=string} true "文件列表、输出路径和压缩格式"
+// @Success 200 {object} handler.Response "压缩成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/compress [post]
 func CompressFiles(c *gin.Context) {
 	var req struct {
 		Files      []string `json:"files"`
@@ -496,6 +601,19 @@ func createTarGz(files []string, output string) error {
 }
 
 // ExtractFiles 解压文件
+// @Summary 解压文件
+// @Description 解压压缩文件到指定目录
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{filePath=string,destination=string} true "压缩文件路径和解压目标目录"
+// @Success 200 {object} handler.Response "解压成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/extract [post]
 func ExtractFiles(c *gin.Context) {
 	var req struct {
 		FilePath   string `json:"filePath"`
@@ -723,6 +841,19 @@ func extractTarGz(src, dest string) error {
 }
 
 // GetPermissions 获取文件权限
+// @Summary 获取文件权限
+// @Description 获取指定文件或目录的权限信息
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param path query string true "文件路径"
+// @Success 200 {object} handler.Response{data=object{permissions=string,owner=string,group=string}} "获取成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/permissions [get]
 func GetPermissions(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -754,6 +885,19 @@ func GetPermissions(c *gin.Context) {
 }
 
 // SetPermissions 设置文件权限
+// @Summary 设置文件权限
+// @Description 设置指定文件或目录的权限
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{path=string,permissions=string,recursive=bool} true "文件路径、权限和是否递归"
+// @Success 200 {object} handler.Response "设置成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/permissions [post]
 func SetPermissions(c *gin.Context) {
 	var req struct {
 		Path        string `json:"path"`
@@ -813,6 +957,19 @@ func SetPermissions(c *gin.Context) {
 }
 
 // GetFileContent 获取文件内容（用于编辑文本文件）
+// @Summary 获取文件内容
+// @Description 获取文本文件的内容用于编辑
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param path query string true "文件路径"
+// @Success 200 {object} handler.Response{data=object{content=string}} "获取成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/content [get]
 func GetFileContent(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -838,6 +995,19 @@ func GetFileContent(c *gin.Context) {
 }
 
 // SaveFileContent 保存文件内容
+// @Summary 保存文件内容
+// @Description 保存编辑后的文本文件内容
+// @Tags 文件管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{path=string,content=string} true "文件路径和内容"
+// @Success 200 {object} handler.Response "保存成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "拒绝访问"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/files/content [post]
 func SaveFileContent(c *gin.Context) {
 	var req struct {
 		Path    string `json:"path"`

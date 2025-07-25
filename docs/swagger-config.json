@@ -1,0 +1,73 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "EtaPanel API",
+    "version": "1.0.0",
+    "description": "EtaPanel 服务器管理面板后端API文档",
+    "contact": {
+      "name": "EtaPanel Support",
+      "url": "https://github.com/EtaPanel-dev/Eta-Panel",
+      "email": "support@etapanel.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:8080",
+  "basePath": "/api",
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "输入Bearer token，格式：Bearer {token}"
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "公共接口",
+      "description": "无需认证的公共接口"
+    },
+    {
+      "name": "认证",
+      "description": "用户认证相关接口"
+    },
+    {
+      "name": "系统监控",
+      "description": "系统资源监控和进程管理"
+    },
+    {
+      "name": "文件管理",
+      "description": "文件和目录操作管理"
+    },
+    {
+      "name": "定时任务",
+      "description": "Crontab定时任务管理"
+    },
+    {
+      "name": "Nginx管理",
+      "description": "Nginx服务器配置和网站管理"
+    },
+    {
+      "name": "SSL证书管理",
+      "description": "SSL证书申请和管理"
+    },
+    {
+      "name": "ACME客户端管理",
+      "description": "ACME客户端配置管理"
+    },
+    {
+      "name": "DNS账号管理",
+      "description": "DNS服务商账号配置管理"
+    }
+  ]
+}

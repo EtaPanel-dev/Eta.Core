@@ -2,15 +2,16 @@ package system
 
 import (
 	"fmt"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
+	"github.com/gin-gonic/gin"
 )
 
 // getProcessCount 获取进程数量
@@ -36,12 +37,35 @@ func getProcessCount() int {
 }
 
 // GetProcessList 获取进程列表
+// @Summary 获取进程列表
+// @Description 获取系统中所有运行的进程信息
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=object{processes=[]models.ProcessInfo}} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system/processes [get]
 func GetProcessList(c *gin.Context) {
 	processes := getProcessList()
 	handler.Respond(c, http.StatusOK, nil, gin.H{"processes": processes})
 }
 
 // KillProcess 终止进程
+// @Summary 终止进程
+// @Description 向指定进程发送信号以终止进程
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body object{pid=int,signal=string} true "进程ID和信号类型"
+// @Success 200 {object} handler.Response "终止成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 403 {object} handler.Response "无法终止系统关键进程"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system/process/kill [post]
 func KillProcess(c *gin.Context) {
 	var req struct {
 		PID    int    `json:"pid"`

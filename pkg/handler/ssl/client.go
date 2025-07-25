@@ -1,16 +1,27 @@
 package ssl
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
 	ssl2 "github.com/EtaPanel-dev/Eta-Panel/core/pkg/ssl"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"time"
 )
 
 // GetAcmeClients 获取所有 Acme 客户端
+// @Summary 获取ACME客户端列表
+// @Description 获取所有ACME客户端配置
+// @Tags ACME客户端管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=[]ssl.AcmeClientResponse} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/clients [get]
 func GetAcmeClients(c *gin.Context) {
 	var clients []ssl.AcmeClient
 	DbConn := database.DbConn
@@ -45,6 +56,18 @@ func GetAcmeClient(id int) (ssl.AcmeClient, error) {
 }
 
 // CreateAcmeClient 创建 ACME 客户端
+// @Summary 创建ACME客户端
+// @Description 创建新的ACME客户端配置
+// @Tags ACME客户端管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body ssl.CreateAcmeClientRequest true "ACME客户端信息"
+// @Success 200 {object} handler.Response "创建成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/clients [post]
 func CreateAcmeClient(c *gin.Context) {
 	var req ssl.CreateAcmeClientRequest
 	DbConn := database.DbConn
@@ -82,6 +105,21 @@ func CreateAcmeClient(c *gin.Context) {
 	})
 }
 
+// UpdateAcmeClient 更新ACME客户端
+// @Summary 更新ACME客户端
+// @Description 更新指定ID的ACME客户端配置
+// @Tags ACME客户端管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "客户端ID"
+// @Param request body ssl.CreateAcmeClientRequest true "ACME客户端信息"
+// @Success 200 {object} handler.Response "更新成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 404 {object} handler.Response "客户端不存在"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/clients/{id} [put]
 func UpdateAcmeClient(c *gin.Context) {
 	id := c.Param("id")
 
@@ -112,6 +150,19 @@ func UpdateAcmeClient(c *gin.Context) {
 }
 
 // DeleteAcmeClient 删除 ACME 客户端
+// @Summary 删除ACME客户端
+// @Description 删除指定ID的ACME客户端配置
+// @Tags ACME客户端管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "客户端ID"
+// @Success 200 {object} handler.Response "删除成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 404 {object} handler.Response "客户端不存在"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/clients/{id} [delete]
 func DeleteAcmeClient(c *gin.Context) {
 	id := c.Param("id")
 

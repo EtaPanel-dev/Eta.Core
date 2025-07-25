@@ -2,9 +2,6 @@ package nginx
 
 import (
 	"fmt"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,9 +11,23 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
+	"github.com/gin-gonic/gin"
 )
 
 // RestartNginx 重启Nginx服务
+// @Summary 重启Nginx服务
+// @Description 重启Nginx服务
+// @Tags Nginx管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response "重启成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/nginx/restart [post]
 func RestartNginx(c *gin.Context) {
 	if err := restartNginxService(); err != nil {
 		handler.Respond(c, http.StatusInternalServerError, "重启Nginx失败: "+err.Error(), nil)
@@ -27,6 +38,16 @@ func RestartNginx(c *gin.Context) {
 }
 
 // ReloadNginx 重新加载Nginx配置
+// @Summary 重新加载Nginx配置
+// @Description 重新加载Nginx配置而不重启服务
+// @Tags Nginx管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response "重新加载成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/nginx/reload [post]
 func ReloadNginx(c *gin.Context) {
 	if err := reloadNginxService(); err != nil {
 		handler.Respond(c, http.StatusInternalServerError, "重新加载Nginx配置失败: "+err.Error(), nil)
@@ -37,6 +58,17 @@ func ReloadNginx(c *gin.Context) {
 }
 
 // TestNginxConfig 测试Nginx配置
+// @Summary 测试Nginx配置
+// @Description 测试Nginx配置文件的语法是否正确
+// @Tags Nginx管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response "配置测试通过"
+// @Failure 400 {object} handler.Response "配置测试失败"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/nginx/test [post]
 func TestNginxConfig(c *gin.Context) {
 	if err := testNginxConfig(); err != nil {
 		handler.Respond(c, http.StatusBadRequest, "Nginx配置测试失败: "+err.Error(), nil)

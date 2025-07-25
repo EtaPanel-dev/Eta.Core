@@ -1,4 +1,2316 @@
+basePath: /api
+definitions:
+  auth.LoginRequest:
+    properties:
+      password:
+        example: password123
+        minLength: 6
+        type: string
+      username:
+        example: admin
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  auth.LoginResponse:
+    properties:
+      expires_at:
+        example: 1640995200
+        type: integer
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwOTk1MjAwfQ.signature
+        type: string
+    type: object
+  handler.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  models.CpuInfo:
+    properties:
+      cores:
+        type: integer
+      loadAverage:
+        items:
+          type: number
+        type: array
+      model:
+        type: string
+      usage:
+        type: number
+    type: object
+  models.CrontabEntry:
+    properties:
+      command:
+        type: string
+      comment:
+        type: string
+      day:
+        type: string
+      enabled:
+        type: boolean
+      fullLine:
+        type: string
+      hour:
+        type: string
+      id:
+        type: integer
+      minute:
+        type: string
+      month:
+        type: string
+      nextRun:
+        type: string
+      weekday:
+        type: string
+    type: object
+  models.CrontabRequest:
+    properties:
+      command:
+        type: string
+      comment:
+        type: string
+      day:
+        type: string
+      enabled:
+        type: boolean
+      hour:
+        type: string
+      minute:
+        type: string
+      month:
+        type: string
+      weekday:
+        type: string
+    required:
+    - command
+    - day
+    - hour
+    - minute
+    - month
+    - weekday
+    type: object
+  models.DiskInfo:
+    properties:
+      available:
+        type: integer
+      device:
+        type: string
+      fsType:
+        type: string
+      mountPoint:
+        type: string
+      total:
+        type: integer
+      used:
+        type: integer
+      usedPercent:
+        type: number
+    type: object
+  models.FileInfo:
+    properties:
+      group:
+        type: string
+      isDir:
+        type: boolean
+      modTime:
+        type: string
+      mode:
+        type: string
+      name:
+        type: string
+      owner:
+        type: string
+      path:
+        type: string
+      permissions:
+        type: string
+      size:
+        type: integer
+    type: object
+  models.MemoryInfo:
+    properties:
+      available:
+        type: integer
+      buffers:
+        type: integer
+      cached:
+        type: integer
+      swapTotal:
+        type: integer
+      swapUsed:
+        type: integer
+      total:
+        type: integer
+      used:
+        type: integer
+      usedPercent:
+        type: number
+    type: object
+  models.NetworkConnection:
+    properties:
+      localAddr:
+        type: string
+      pid:
+        type: integer
+      protocol:
+        type: string
+      remoteAddr:
+        type: string
+      state:
+        type: string
+    type: object
+  models.NetworkInfo:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/models.NetworkConnection'
+        type: array
+      interfaces:
+        items:
+          $ref: '#/definitions/models.NetworkInterface'
+        type: array
+    type: object
+  models.NetworkInterface:
+    properties:
+      addresses:
+        items:
+          type: string
+        type: array
+      flags:
+        items:
+          type: string
+        type: array
+      mtu:
+        type: integer
+      name:
+        type: string
+      rxBytes:
+        type: integer
+      rxPackets:
+        type: integer
+      txBytes:
+        type: integer
+      txPackets:
+        type: integer
+    type: object
+  models.NginxConfig:
+    properties:
+      accessLog:
+        type: string
+      configPath:
+        type: string
+      errorLog:
+        type: string
+      gzip:
+        type: boolean
+      pidFile:
+        type: string
+      serverTokens:
+        type: boolean
+      user:
+        type: string
+      workerConn:
+        type: string
+      workerProcess:
+        type: string
+    type: object
+  models.NginxSite:
+    properties:
+      accessLog:
+        type: string
+      aliases:
+        items:
+          type: string
+        type: array
+      configPath:
+        type: string
+      createdAt:
+        type: string
+      domain:
+        type: string
+      enabled:
+        type: boolean
+      errorLog:
+        type: string
+      forceHttps:
+        type: boolean
+      id:
+        type: integer
+      index:
+        type: string
+      name:
+        type: string
+      proxy:
+        type: boolean
+      proxyPass:
+        type: string
+      rewrite:
+        type: string
+      root:
+        type: string
+      ssl:
+        type: boolean
+      sslCert:
+        type: string
+      sslKey:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.NginxStatus:
+    properties:
+      configTest:
+        type: boolean
+      connections:
+        type: integer
+      pid:
+        type: integer
+      running:
+        type: boolean
+      uptime:
+        type: string
+      version:
+        type: string
+    type: object
+  models.OSInfo:
+    properties:
+      arch:
+        type: string
+      hostname:
+        type: string
+      kernel:
+        type: string
+      os:
+        type: string
+      processes:
+        type: integer
+      uptime:
+        type: integer
+    type: object
+  models.ProcessInfo:
+    properties:
+      command:
+        type: string
+      cpu:
+        type: number
+      memory:
+        type: integer
+      name:
+        type: string
+      pid:
+        type: integer
+      state:
+        type: string
+    type: object
+  models.SystemInfo:
+    properties:
+      cpu:
+        $ref: '#/definitions/models.CpuInfo'
+      disk:
+        items:
+          $ref: '#/definitions/models.DiskInfo'
+        type: array
+      memory:
+        $ref: '#/definitions/models.MemoryInfo'
+      network:
+        $ref: '#/definitions/models.NetworkInfo'
+      system:
+        $ref: '#/definitions/models.OSInfo'
+    type: object
+  ssl.AcmeClientResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      server_url:
+        type: string
+    type: object
+  ssl.CreateAcmeClientRequest:
+    properties:
+      email:
+        type: string
+      key_type:
+        type: string
+      server_url:
+        type: string
+    required:
+    - email
+    - key_type
+    - server_url
+    type: object
+  ssl.CreateDnsAccountRequest:
+    properties:
+      key:
+        type: string
+      provider_id:
+        type: integer
+      value:
+        type: string
+    required:
+    - key
+    - provider_id
+    - value
+    type: object
+  ssl.CreateSSLRequest:
+    properties:
+      acme_client_id:
+        type: integer
+      domain:
+        type: string
+    required:
+    - acme_client_id
+    - domain
+    type: object
+host: localhost:8080
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: support@etapanel.com
+    name: EtaPanel Support
+    url: https://github.com/EtaPanel-dev/Eta-Panel
+  description: EtaPanel 服务器管理面板后端API文档，提供系统监控、文件管理、Nginx配置、SSL证书管理等功能
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: EtaPanel API
+  version: "1.0"
+paths:
+  /api/auth/acme/clients:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有ACME客户端配置
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ssl.AcmeClientResponse'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取ACME客户端列表
+      tags:
+      - ACME客户端管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的ACME客户端配置
+      parameters:
+      - description: ACME客户端信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ssl.CreateAcmeClientRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建ACME客户端
+      tags:
+      - ACME客户端管理
+  /api/auth/acme/clients/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的ACME客户端配置
+      parameters:
+      - description: 客户端ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 客户端不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除ACME客户端
+      tags:
+      - ACME客户端管理
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的ACME客户端配置
+      parameters:
+      - description: 客户端ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ACME客户端信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ssl.CreateAcmeClientRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 客户端不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新ACME客户端
+      tags:
+      - ACME客户端管理
+  /api/auth/acme/dns:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有DNS服务商账号配置
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    type: object
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取DNS账号列表
+      tags:
+      - DNS账号管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的DNS服务商账号配置
+      parameters:
+      - description: DNS账号信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ssl.CreateDnsAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建DNS账号
+      tags:
+      - DNS账号管理
+  /api/auth/acme/dns/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的DNS服务商账号配置
+      parameters:
+      - description: 账号ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 账号不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除DNS账号
+      tags:
+      - DNS账号管理
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的DNS服务商账号配置
+      parameters:
+      - description: 账号ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: DNS账号信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ssl.CreateDnsAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 账号不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新DNS账号
+      tags:
+      - DNS账号管理
+  /api/auth/acme/ssl:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有SSL证书信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    type: object
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取SSL证书列表
+      tags:
+      - SSL证书管理
+    post:
+      consumes:
+      - application/json
+      description: 通过ACME协议申请SSL证书
+      parameters:
+      - description: SSL申请信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ssl.CreateSSLRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 申请成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 申请SSL证书
+      tags:
+      - SSL证书管理
+  /api/auth/acme/ssl/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的SSL证书
+      parameters:
+      - description: 证书ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 证书不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除SSL证书
+      tags:
+      - SSL证书管理
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的SSL证书信息
+      parameters:
+      - description: 证书ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: SSL证书信息
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            auto_renew:
+              type: boolean
+            certificate:
+              type: string
+            domain:
+              type: string
+            email:
+              type: string
+            enabled:
+              type: boolean
+            key:
+              type: string
+            provider:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 证书不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新SSL证书
+      tags:
+      - SSL证书管理
+  /api/auth/crontab:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统中所有的crontab定时任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.CrontabEntry'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取crontab列表
+      tags:
+      - 定时任务
+    post:
+      consumes:
+      - application/json
+      description: 创建新的定时任务
+      parameters:
+      - description: 定时任务信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CrontabRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建crontab条目
+      tags:
+      - 定时任务
+  /api/auth/crontab/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的定时任务
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 任务不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除crontab条目
+      tags:
+      - 定时任务
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的定时任务
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 定时任务信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CrontabRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 任务不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新crontab条目
+      tags:
+      - 定时任务
+  /api/auth/crontab/{id}/toggle:
+    post:
+      consumes:
+      - application/json
+      description: 切换指定ID定时任务的启用状态
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 操作成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 任务不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 启用/禁用crontab条目
+      tags:
+      - 定时任务
+  /api/auth/files:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定路径的文件或目录
+      parameters:
+      - description: 文件路径
+        in: query
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除文件
+      tags:
+      - 文件管理
+    get:
+      consumes:
+      - application/json
+      description: 获取指定目录下的文件和文件夹列表
+      parameters:
+      - default: '"/home"'
+        description: 目录路径
+        in: query
+        name: path
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  properties:
+                    currentPath:
+                      type: string
+                    files:
+                      items:
+                        $ref: '#/definitions/models.FileInfo'
+                      type: array
+                  type: object
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 列出目录文件
+      tags:
+      - 文件管理
+  /api/auth/files/compress:
+    post:
+      consumes:
+      - application/json
+      description: 将多个文件压缩为指定格式的压缩包
+      parameters:
+      - description: 文件列表、输出路径和压缩格式
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            files:
+              items:
+                type: string
+              type: array
+            format:
+              type: string
+            output:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 压缩成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 压缩文件
+      tags:
+      - 文件管理
+  /api/auth/files/content:
+    get:
+      consumes:
+      - application/json
+      description: 获取文本文件的内容用于编辑
+      parameters:
+      - description: 文件路径
+        in: query
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  properties:
+                    content:
+                      type: string
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取文件内容
+      tags:
+      - 文件管理
+    post:
+      consumes:
+      - application/json
+      description: 保存编辑后的文本文件内容
+      parameters:
+      - description: 文件路径和内容
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            content:
+              type: string
+            path:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 保存成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 保存文件内容
+      tags:
+      - 文件管理
+  /api/auth/files/copy:
+    post:
+      consumes:
+      - application/json
+      description: 将文件从源路径复制到目标路径
+      parameters:
+      - description: 源路径和目标路径
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            destination:
+              type: string
+            source:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 复制成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 复制文件
+      tags:
+      - 文件管理
+  /api/auth/files/download:
+    get:
+      consumes:
+      - application/json
+      description: 下载指定路径的文件
+      parameters:
+      - description: 文件路径
+        in: query
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: 文件内容
+          schema:
+            type: file
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 文件不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 下载文件
+      tags:
+      - 文件管理
+  /api/auth/files/extract:
+    post:
+      consumes:
+      - application/json
+      description: 解压压缩文件到指定目录
+      parameters:
+      - description: 压缩文件路径和解压目标目录
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            destination:
+              type: string
+            filePath:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 解压成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 解压文件
+      tags:
+      - 文件管理
+  /api/auth/files/mkdir:
+    post:
+      consumes:
+      - application/json
+      description: 在指定路径创建新目录
+      parameters:
+      - description: 目录路径
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            path:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建目录
+      tags:
+      - 文件管理
+  /api/auth/files/move:
+    post:
+      consumes:
+      - application/json
+      description: 将文件从源路径移动到目标路径
+      parameters:
+      - description: 源路径和目标路径
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            destination:
+              type: string
+            source:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 移动成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 移动文件
+      tags:
+      - 文件管理
+  /api/auth/files/permissions:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定文件或目录的权限信息
+      parameters:
+      - description: 文件路径
+        in: query
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  properties:
+                    group:
+                      type: string
+                    owner:
+                      type: string
+                    permissions:
+                      type: string
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取文件权限
+      tags:
+      - 文件管理
+    post:
+      consumes:
+      - application/json
+      description: 设置指定文件或目录的权限
+      parameters:
+      - description: 文件路径、权限和是否递归
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            path:
+              type: string
+            permissions:
+              type: string
+            recursive:
+              type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 设置成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 设置文件权限
+      tags:
+      - 文件管理
+  /api/auth/files/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件到指定目录
+      parameters:
+      - description: 目标目录路径
+        in: formData
+        name: path
+        required: true
+        type: string
+      - description: 上传的文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 拒绝访问
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 上传文件
+      tags:
+      - 文件管理
+  /api/auth/nginx/config:
+    get:
+      consumes:
+      - application/json
+      description: 获取Nginx的主配置文件内容
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.NginxConfig'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取Nginx主配置
+      tags:
+      - Nginx管理
+    put:
+      consumes:
+      - application/json
+      description: 更新Nginx的主配置文件
+      parameters:
+      - description: Nginx配置信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NginxConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新Nginx主配置
+      tags:
+      - Nginx管理
+  /api/auth/nginx/config/reset:
+    post:
+      consumes:
+      - application/json
+      description: 将Nginx配置重置为默认设置
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 重置成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 重置Nginx配置
+      tags:
+      - Nginx管理
+  /api/auth/nginx/reload:
+    post:
+      consumes:
+      - application/json
+      description: 重新加载Nginx配置而不重启服务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 重新加载成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 重新加载Nginx配置
+      tags:
+      - Nginx管理
+  /api/auth/nginx/restart:
+    post:
+      consumes:
+      - application/json
+      description: 重启Nginx服务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 重启成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 重启Nginx服务
+      tags:
+      - Nginx管理
+  /api/auth/nginx/sites:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有Nginx网站配置列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.NginxSite'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取网站列表
+      tags:
+      - Nginx管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的Nginx网站配置
+      parameters:
+      - description: 网站配置信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NginxSite'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "409":
+          description: 域名已存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建网站
+      tags:
+      - Nginx管理
+  /api/auth/nginx/sites/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的网站配置
+      parameters:
+      - description: 网站ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 网站不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除网站
+      tags:
+      - Nginx管理
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的网站配置
+      parameters:
+      - description: 网站ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 网站配置信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NginxSite'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 网站不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新网站配置
+      tags:
+      - Nginx管理
+  /api/auth/nginx/sites/{id}/toggle:
+    post:
+      consumes:
+      - application/json
+      description: 切换指定ID网站的启用状态
+      parameters:
+      - description: 网站ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 操作成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: 网站不存在
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 启用/禁用网站
+      tags:
+      - Nginx管理
+  /api/auth/nginx/status:
+    get:
+      consumes:
+      - application/json
+      description: 获取Nginx服务的运行状态信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.NginxStatus'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取Nginx状态
+      tags:
+      - Nginx管理
+  /api/auth/nginx/test:
+    post:
+      consumes:
+      - application/json
+      description: 测试Nginx配置文件的语法是否正确
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 配置测试通过
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 配置测试失败
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 测试Nginx配置
+      tags:
+      - Nginx管理
+  /api/auth/system:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统的CPU、内存、磁盘、网络等综合信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.SystemInfo'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取系统信息
+      tags:
+      - 系统监控
+  /api/auth/system/cpu:
+    get:
+      consumes:
+      - application/json
+      description: 获取CPU核心数、型号、使用率和负载平均值
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.CpuInfo'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取CPU信息
+      tags:
+      - 系统监控
+  /api/auth/system/disk:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有磁盘分区的使用情况
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.DiskInfo'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取磁盘信息
+      tags:
+      - 系统监控
+  /api/auth/system/memory:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统内存使用情况，包括总内存、已用内存、缓存等
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.MemoryInfo'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取内存信息
+      tags:
+      - 系统监控
+  /api/auth/system/network:
+    get:
+      consumes:
+      - application/json
+      description: 获取网络接口和连接信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.NetworkInfo'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取网络信息
+      tags:
+      - 系统监控
+  /api/auth/system/process/kill:
+    post:
+      consumes:
+      - application/json
+      description: 向指定进程发送信号以终止进程
+      parameters:
+      - description: 进程ID和信号类型
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            pid:
+              type: integer
+            signal:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 终止成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "403":
+          description: 无法终止系统关键进程
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 终止进程
+      tags:
+      - 系统监控
+  /api/auth/system/processes:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统中所有运行的进程信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  properties:
+                    processes:
+                      items:
+                        $ref: '#/definitions/models.ProcessInfo'
+                      type: array
+                  type: object
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取进程列表
+      tags:
+      - 系统监控
+  /api/public/login:
+    post:
+      consumes:
+      - application/json
+      description: 通过用户名和密码进行登录，返回JWT token
+      parameters:
+      - description: 登录信息
+        in: body
+        name: loginData
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.LoginResponse'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 用户名或密码错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 用户登录
+      tags:
+      - 认证
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: 输入Bearer token，格式：Bearer {token}
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
+tags:
+- description: 无需认证的公共接口
+  name: 公共接口
+- description: 用户认证相关接口
+  name: 认证
+- description: 系统资源监控和进程管理
+  name: 系统监控
+- description: 文件和目录操作管理
+  name: 文件管理
+- description: Crontab定时任务管理
+  name: 定时任务
+- description: Nginx服务器配置和网站管理
+  name: Nginx管理
+- description: SSL证书申请和管理
+  name: SSL证书管理
+- description: ACME客户端配置管理
+  name: ACME客户端管理
+- description: DNS服务商账号配置管理
+  name: DNS账号管理

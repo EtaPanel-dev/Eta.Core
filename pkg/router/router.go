@@ -20,9 +20,19 @@ func LoadRoutes(r *gin.Engine) {
 	r.Use(middleware.CORS())
 	r.Use(middleware.Security())
 
+	// API版本控制
+	v1 := r.Group("/api/v1")
+
 	// 公共 API
 	apiPublicRouter := r.Group("/api/public")
 	{
+		// @Summary 健康检查
+		// @Description API服务器状态检查
+		// @Tags 公共接口
+		// @Accept json
+		// @Produce json
+		// @Success 200 {object} object{code=int,message=string} "服务正常"
+		// @Router /api/public [get]
 		apiPublicRouter.GET("/", func(c *gin.Context) {
 			c.JSON(200, gin.H{"code": 200, "message": "Eta Panel API Server Is OK!"})
 		})
@@ -31,6 +41,7 @@ func LoadRoutes(r *gin.Engine) {
 
 	// 授权api
 	apiAuthRouter := r.Group("/api/auth")
+	apiAuthRouter.Use(middleware.JWTAuth()) // 添加JWT认证中间件
 	{
 		apiFileRouter := apiAuthRouter.Group("/files")
 		{

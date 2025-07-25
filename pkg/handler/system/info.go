@@ -2,9 +2,6 @@ package system
 
 import (
 	"fmt"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -14,9 +11,23 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
+	"github.com/gin-gonic/gin"
 )
 
 // GetSystemInfo 获取系统信息
+// @Summary 获取系统信息
+// @Description 获取系统的CPU、内存、磁盘、网络等综合信息
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=models.SystemInfo} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system [get]
 func GetSystemInfo(c *gin.Context) {
 	info := models.SystemInfo{
 		Cpu:     getCPUInfo(),
@@ -447,21 +458,61 @@ func getOSInfo() models.OSInfo {
 }
 
 // GetCPUInfo 单独获取CPU信息
+// @Summary 获取CPU信息
+// @Description 获取CPU核心数、型号、使用率和负载平均值
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=models.CpuInfo} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system/cpu [get]
 func GetCPUInfo(c *gin.Context) {
 	handler.Respond(c, http.StatusOK, nil, getCPUInfo())
 }
 
 // GetMemoryInfo 单独获取内存信息
+// @Summary 获取内存信息
+// @Description 获取系统内存使用情况，包括总内存、已用内存、缓存等
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=models.MemoryInfo} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system/memory [get]
 func GetMemoryInfo(c *gin.Context) {
 	handler.Respond(c, http.StatusOK, nil, getMemoryInfo())
 }
 
 // GetDiskInfo 单独获取磁盘信息
+// @Summary 获取磁盘信息
+// @Description 获取所有磁盘分区的使用情况
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=[]models.DiskInfo} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system/disk [get]
 func GetDiskInfo(c *gin.Context) {
 	handler.Respond(c, http.StatusOK, nil, getDiskInfo())
 }
 
 // GetNetworkInfo 单独获取网络信息
+// @Summary 获取网络信息
+// @Description 获取网络接口和连接信息
+// @Tags 系统监控
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=models.NetworkInfo} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/system/network [get]
 func GetNetworkInfo(c *gin.Context) {
 	handler.Respond(c, http.StatusOK, nil, getNetworkInfo())
 }

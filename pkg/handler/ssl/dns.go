@@ -1,14 +1,27 @@
 package ssl
 
 import (
+	"net/http"
+
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // CreateDnsAccount 创建 DNS 账号
+// @Summary 创建DNS账号
+// @Description 创建新的DNS服务商账号配置
+// @Tags DNS账号管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body ssl.CreateDnsAccountRequest true "DNS账号信息"
+// @Success 200 {object} handler.Response "创建成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/dns [post]
 func CreateDnsAccount(c *gin.Context) {
 	var req ssl.CreateDnsAccountRequest
 	var DbConn = database.DbConn
@@ -34,6 +47,16 @@ func CreateDnsAccount(c *gin.Context) {
 }
 
 // GetDnsAccounts 获取所有 DNS 账号
+// @Summary 获取DNS账号列表
+// @Description 获取所有DNS服务商账号配置
+// @Tags DNS账号管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} handler.Response{data=[]object} "获取成功"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/dns [get]
 func GetDnsAccounts(c *gin.Context) {
 	var dnsUsers []ssl.DnsUser
 	DbConn := database.DbConn
@@ -60,6 +83,19 @@ func GetDnsAccounts(c *gin.Context) {
 }
 
 // DeleteDnsAccount 删除 DNS 账号
+// @Summary 删除DNS账号
+// @Description 删除指定ID的DNS服务商账号配置
+// @Tags DNS账号管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "账号ID"
+// @Success 200 {object} handler.Response "删除成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 404 {object} handler.Response "账号不存在"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/dns/{id} [delete]
 func DeleteDnsAccount(c *gin.Context) {
 	id := c.Param("id")
 	var dnsUser ssl.DnsUser
@@ -79,6 +115,20 @@ func DeleteDnsAccount(c *gin.Context) {
 }
 
 // UpdateDnsAccount 更新 DNS 账号
+// @Summary 更新DNS账号
+// @Description 更新指定ID的DNS服务商账号配置
+// @Tags DNS账号管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "账号ID"
+// @Param request body ssl.CreateDnsAccountRequest true "DNS账号信息"
+// @Success 200 {object} handler.Response "更新成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 404 {object} handler.Response "账号不存在"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/dns/{id} [put]
 func UpdateDnsAccount(c *gin.Context) {
 	id := c.Param("id")
 	var req ssl.CreateDnsAccountRequest

@@ -9,12 +9,13 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
+	"os"
+
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
 	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
 	"github.com/gin-gonic/gin"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"golang.org/x/crypto/acme"
-	"os"
 )
 
 type CreateSSLRequest struct {
@@ -22,6 +23,19 @@ type CreateSSLRequest struct {
 	Domain       string `json:"domain" binding:"required"`
 }
 
+// IssueSSL 申请SSL证书
+// @Summary 申请SSL证书
+// @Description 通过ACME协议申请SSL证书
+// @Tags SSL证书管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body CreateSSLRequest true "SSL申请信息"
+// @Success 200 {object} handler.Response "申请成功"
+// @Failure 400 {object} handler.Response "请求参数错误"
+// @Failure 401 {object} handler.Response "未授权"
+// @Failure 500 {object} handler.Response "服务器内部错误"
+// @Router /api/auth/acme/ssl [post]
 func IssueSSL(c *gin.Context) {
 	var req CreateSSLRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

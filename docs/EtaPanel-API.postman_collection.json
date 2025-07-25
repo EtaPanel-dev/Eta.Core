@@ -1,0 +1,428 @@
+{
+    "info": {
+        "name": "EtaPanel API",
+        "description": "EtaPanel 服务器管理面板API集合",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{jwt_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "jwt_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "认证",
+            "item": [
+                {
+                    "name": "用户登录",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/public/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "public",
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "系统监控",
+            "item": [
+                {
+                    "name": "获取系统信息",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/system",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "system"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "获取CPU信息",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/system/cpu",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "system",
+                                "cpu"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "获取进程列表",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/system/processes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "system",
+                                "processes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "终止进程",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"pid\": 1234,\n  \"signal\": \"TERM\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/system/process/kill",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "system",
+                                "process",
+                                "kill"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "文件管理",
+            "item": [
+                {
+                    "name": "列出目录文件",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/files?path=/home",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "files"
+                            ],
+                            "query": [
+                                {
+                                    "key": "path",
+                                    "value": "/home"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "下载文件",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/files/download?path=/home/user/example.txt",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "files",
+                                "download"
+                            ],
+                            "query": [
+                                {
+                                    "key": "path",
+                                    "value": "/home/user/example.txt"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "创建目录",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"path\": \"/home/user\",\n  \"name\": \"new_folder\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/files/mkdir",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "files",
+                                "mkdir"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Nginx管理",
+            "item": [
+                {
+                    "name": "获取Nginx状态",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/nginx/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "nginx",
+                                "status"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "获取网站列表",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/nginx/sites",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "nginx",
+                                "sites"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "创建网站",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"example.com\",\n  \"domain\": \"example.com\",\n  \"root\": \"/var/www/example.com\",\n  \"index\": \"index.html\",\n  \"ssl\": false,\n  \"enabled\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/nginx/sites",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "nginx",
+                                "sites"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "重启Nginx",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/nginx/restart",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "nginx",
+                                "restart"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "定时任务",
+            "item": [
+                {
+                    "name": "获取定时任务列表",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/crontab",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "crontab"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "创建定时任务",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"minute\": \"0\",\n  \"hour\": \"2\",\n  \"day\": \"*\",\n  \"month\": \"*\",\n  \"weekday\": \"*\",\n  \"command\": \"/usr/bin/backup.sh\",\n  \"comment\": \"每天凌晨2点执行备份\",\n  \"enabled\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/crontab",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "crontab"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "SSL证书管理",
+            "item": [
+                {
+                    "name": "获取SSL证书列表",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/acme/ssl",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "acme",
+                                "ssl"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "申请SSL证书",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"acme_client_id\": 1,\n  \"domain\": \"example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/acme/ssl",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "acme",
+                                "ssl"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
