@@ -6,12 +6,9 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
 
@@ -117,33 +114,35 @@ func ListFiles(c *gin.Context) {
 // @Failure 404 {object} handler.Response "文件不存在"
 // @Router /auth/files/download [get]
 func DownloadFile(c *gin.Context) {
-	filePath := c.Query("path")
-	if filePath == "" {
-		handler.Respond(c, http.StatusBadRequest, "参数为空", nil)
-		return
-	}
-
-	if isProtectedPath(filePath) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	info, err := os.Stat(filePath)
-	if err != nil {
-		handler.Respond(c, http.StatusNotFound, "文件不存在", nil)
-		return
-	}
-
-	if info.IsDir() {
-		handler.Respond(c, http.StatusBadRequest, "文件夹不允许下载", nil)
-		return
-	}
-
-	c.Header("Content-Description", "File Transfer")
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
-	c.Header("Content-Type", "application/octet-stream")
-	c.File(filePath)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//filePath := c.Query("path")
+	//if filePath == "" {
+	//	handler.Respond(c, http.StatusBadRequest, "参数为空", nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(filePath) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//info, err := os.Stat(filePath)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusNotFound, "文件不存在", nil)
+	//	return
+	//}
+	//
+	//if info.IsDir() {
+	//	handler.Respond(c, http.StatusBadRequest, "文件夹不允许下载", nil)
+	//	return
+	//}
+	//
+	//c.Header("Content-Description", "File Transfer")
+	//c.Header("Content-Transfer-Encoding", "binary")
+	//c.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
+	//c.Header("Content-Type", "application/octet-stream")
+	//c.File(filePath)
 }
 
 // UploadFile 上传文件
@@ -162,49 +161,51 @@ func DownloadFile(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/upload [post]
 func UploadFile(c *gin.Context) {
-	targetDir := c.PostForm("path")
-	if targetDir == "" {
-		targetDir = "/tmp"
-	}
-
-	if isProtectedPath(targetDir) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	file, header, err := c.Request.FormFile("file")
-	if err != nil {
-		handler.Respond(c, http.StatusBadRequest, "获取上传文件失败", nil)
-		return
-	}
-	defer func(file multipart.File) {
-		err := file.Close()
-		if err != nil {
-
-		}
-	}(file)
-
-	targetPath := filepath.Join(targetDir, header.Filename)
-
-	out, err := os.Create(targetPath)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, "创建文件失败", nil)
-		return
-	}
-	defer func(out *os.File) {
-		err := out.Close()
-		if err != nil {
-
-		}
-	}(out)
-
-	_, err = io.Copy(out, file)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, "保存文件失败", nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "上传成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//targetDir := c.PostForm("path")
+	//if targetDir == "" {
+	//	targetDir = "/tmp"
+	//}
+	//
+	//if isProtectedPath(targetDir) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//file, header, err := c.Request.FormFile("file")
+	//if err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, "获取上传文件失败", nil)
+	//	return
+	//}
+	//defer func(file multipart.File) {
+	//	err := file.Close()
+	//	if err != nil {
+	//
+	//	}
+	//}(file)
+	//
+	//targetPath := filepath.Join(targetDir, header.Filename)
+	//
+	//out, err := os.Create(targetPath)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, "创建文件失败", nil)
+	//	return
+	//}
+	//defer func(out *os.File) {
+	//	err := out.Close()
+	//	if err != nil {
+	//
+	//	}
+	//}(out)
+	//
+	//_, err = io.Copy(out, file)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, "保存文件失败", nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "上传成功", nil)
 }
 
 // MoveFile 移动文件
@@ -222,28 +223,30 @@ func UploadFile(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/move [post]
 func MoveFile(c *gin.Context) {
-	var req struct {
-		Source string `json:"source"`
-		Target string `json:"target"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, nil, nil)
-		return
-	}
-
-	if isProtectedPath(req.Source) || isProtectedPath(req.Target) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	err := os.Rename(req.Source, req.Target)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "移动成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	Source string `json:"source"`
+	//	Target string `json:"target"`
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, nil, nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(req.Source) || isProtectedPath(req.Target) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//err := os.Rename(req.Source, req.Target)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "移动成功", nil)
 }
 
 // CopyFile 复制文件
@@ -261,28 +264,30 @@ func MoveFile(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/copy [post]
 func CopyFile(c *gin.Context) {
-	var req struct {
-		Source string `json:"source"`
-		Target string `json:"target"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, nil, nil)
-		return
-	}
-
-	if isProtectedPath(req.Source) || isProtectedPath(req.Target) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	err := copyFile(req.Source, req.Target)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "复制成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	Source string `json:"source"`
+	//	Target string `json:"target"`
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, nil, nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(req.Source) || isProtectedPath(req.Target) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//err := copyFile(req.Source, req.Target)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "复制成功", nil)
 }
 
 func copyFile(src, dst string) error {
@@ -327,24 +332,26 @@ func copyFile(src, dst string) error {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files [delete]
 func DeleteFile(c *gin.Context) {
-	filePath := c.Query("path")
-	if filePath == "" {
-		handler.Respond(c, http.StatusBadRequest, nil, nil)
-		return
-	}
-
-	if isProtectedPath(filePath) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	err := os.RemoveAll(filePath)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "删除成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//filePath := c.Query("path")
+	//if filePath == "" {
+	//	handler.Respond(c, http.StatusBadRequest, nil, nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(filePath) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//err := os.RemoveAll(filePath)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "删除成功", nil)
 }
 
 // CreateDirectory 创建目录
@@ -362,30 +369,32 @@ func DeleteFile(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/mkdir [post]
 func CreateDirectory(c *gin.Context) {
-	var req struct {
-		Path string `json:"path"`
-		Name string `json:"name"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, "拒绝访问", nil)
-		return
-	}
-
-	fullPath := filepath.Join(req.Path, req.Name)
-
-	if isProtectedPath(fullPath) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	err := os.MkdirAll(fullPath, 0755)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "创建成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	Path string `json:"path"`
+	//	Name string `json:"name"`
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//fullPath := filepath.Join(req.Path, req.Name)
+	//
+	//if isProtectedPath(fullPath) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//err := os.MkdirAll(fullPath, 0755)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "创建成功", nil)
 }
 
 // CompressFiles 压缩文件
@@ -403,41 +412,44 @@ func CreateDirectory(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/compress [post]
 func CompressFiles(c *gin.Context) {
-	var req struct {
-		Files      []string `json:"files"`
-		OutputPath string   `json:"outputPath"`
-		Format     string   `json:"format"` // zip, tar, tar.gz
-	}
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, nil, nil)
-		return
-	}
-
-	if isProtectedPath(req.OutputPath) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	var err error
-	switch req.Format {
-	case "zip":
-		err = createZip(req.Files, req.OutputPath)
-	case "tar":
-		err = createTar(req.Files, req.OutputPath)
-	case "tar.gz":
-		err = createTarGz(req.Files, req.OutputPath)
-	default:
-		handler.Respond(c, http.StatusBadRequest, "格式不支持", nil)
-		return
-	}
-
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "压缩完毕", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	Files      []string `json:"files"`
+	//	OutputPath string   `json:"outputPath"`
+	//	Format     string   `json:"format"` // zip, tar, tar.gz
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, nil, nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(req.OutputPath) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//var err error
+	//switch req.Format {
+	//case "zip":
+	//	err = createZip(req.Files, req.OutputPath)
+	//case "tar":
+	//	err = createTar(req.Files, req.OutputPath)
+	//case "tar.gz":
+	//	err = createTarGz(req.Files, req.OutputPath)
+	//default:
+	//	handler.Respond(c, http.StatusBadRequest, "格式不支持", nil)
+	//	return
+	//}
+	//
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "压缩完毕", nil)
 }
 
 func createZip(files []string, output string) error {
@@ -631,45 +643,47 @@ func createTarGz(files []string, output string) error {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/extract [post]
 func ExtractFiles(c *gin.Context) {
-	var req struct {
-		FilePath   string `json:"filePath"`
-		OutputPath string `json:"outputPath"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, nil, nil)
-		return
-	}
-
-	if isProtectedPath(req.FilePath) || isProtectedPath(req.OutputPath) {
-		handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
-		return
-	}
-
-	ext := strings.ToLower(filepath.Ext(req.FilePath))
-	var err error
-
-	switch ext {
-	case ".zip":
-		err = extractZip(req.FilePath, req.OutputPath)
-	case ".tar":
-		err = extractTar(req.FilePath, req.OutputPath)
-	case ".gz":
-		if strings.HasSuffix(strings.ToLower(req.FilePath), ".tar.gz") {
-			err = extractTarGz(req.FilePath, req.OutputPath)
-		} else {
-			err = fmt.Errorf("不支持的文件格式")
-		}
-	default:
-		err = fmt.Errorf("不支持的文件格式")
-	}
-
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, nil, nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	FilePath   string `json:"filePath"`
+	//	OutputPath string `json:"outputPath"`
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, nil, nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(req.FilePath) || isProtectedPath(req.OutputPath) {
+	//	handler.Respond(c, http.StatusForbidden, "拒绝访问", nil)
+	//	return
+	//}
+	//
+	//ext := strings.ToLower(filepath.Ext(req.FilePath))
+	//var err error
+	//
+	//switch ext {
+	//case ".zip":
+	//	err = extractZip(req.FilePath, req.OutputPath)
+	//case ".tar":
+	//	err = extractTar(req.FilePath, req.OutputPath)
+	//case ".gz":
+	//	if strings.HasSuffix(strings.ToLower(req.FilePath), ".tar.gz") {
+	//		err = extractTarGz(req.FilePath, req.OutputPath)
+	//	} else {
+	//		err = fmt.Errorf("不支持的文件格式")
+	//	}
+	//default:
+	//	err = fmt.Errorf("不支持的文件格式")
+	//}
+	//
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, nil, nil)
 }
 
 func extractZip(src, dest string) error {
@@ -915,61 +929,63 @@ func GetPermissions(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/permissions [post]
 func SetPermissions(c *gin.Context) {
-	var req struct {
-		Path        string `json:"path"`
-		Permissions string `json:"permissions"`
-		Owner       string `json:"owner,omitempty"`
-		Group       string `json:"group,omitempty"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, "请求参数错误", nil)
-		return
-	}
-
-	if isProtectedPath(req.Path) {
-		handler.Respond(c, http.StatusForbidden, "无法修改受保护文件的权限", nil)
-		return
-	}
-
-	// 设置文件权限
-	perm, err := strconv.ParseUint(req.Permissions, 8, 32)
-	if err != nil {
-		handler.Respond(c, http.StatusBadRequest, "权限格式错误", nil)
-		return
-	}
-
-	err = os.Chmod(req.Path, os.FileMode(perm))
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, "设置权限失败: "+err.Error(), nil)
-		return
-	}
-
-	// 设置所有者和组（如果提供）
-	if req.Owner != "" || req.Group != "" {
-		uid := -1
-		gid := -1
-
-		if req.Owner != "" {
-			if u, err := strconv.Atoi(req.Owner); err == nil {
-				uid = u
-			}
-		}
-
-		if req.Group != "" {
-			if g, err := strconv.Atoi(req.Group); err == nil {
-				gid = g
-			}
-		}
-
-		err = os.Chown(req.Path, uid, gid)
-		if err != nil {
-			handler.Respond(c, http.StatusInternalServerError, "设置所有者失败: "+err.Error(), nil)
-			return
-		}
-	}
-
-	handler.Respond(c, http.StatusOK, "权限设置成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	Path        string `json:"path"`
+	//	Permissions string `json:"permissions"`
+	//	Owner       string `json:"owner,omitempty"`
+	//	Group       string `json:"group,omitempty"`
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, "请求参数错误", nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(req.Path) {
+	//	handler.Respond(c, http.StatusForbidden, "无法修改受保护文件的权限", nil)
+	//	return
+	//}
+	//
+	//// 设置文件权限
+	//perm, err := strconv.ParseUint(req.Permissions, 8, 32)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, "权限格式错误", nil)
+	//	return
+	//}
+	//
+	//err = os.Chmod(req.Path, os.FileMode(perm))
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, "设置权限失败: "+err.Error(), nil)
+	//	return
+	//}
+	//
+	//// 设置所有者和组（如果提供）
+	//if req.Owner != "" || req.Group != "" {
+	//	uid := -1
+	//	gid := -1
+	//
+	//	if req.Owner != "" {
+	//		if u, err := strconv.Atoi(req.Owner); err == nil {
+	//			uid = u
+	//		}
+	//	}
+	//
+	//	if req.Group != "" {
+	//		if g, err := strconv.Atoi(req.Group); err == nil {
+	//			gid = g
+	//		}
+	//	}
+	//
+	//	err = os.Chown(req.Path, uid, gid)
+	//	if err != nil {
+	//		handler.Respond(c, http.StatusInternalServerError, "设置所有者失败: "+err.Error(), nil)
+	//		return
+	//	}
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "权限设置成功", nil)
 }
 
 // GetFileContent 获取文件内容（用于编辑文本文件）
@@ -987,34 +1003,36 @@ func SetPermissions(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/content [get]
 func GetFileContent(c *gin.Context) {
-	filePath := c.Query("path")
-	if filePath == "" {
-		handler.Respond(c, http.StatusBadRequest, "文件路径不能为空", nil)
-		return
-	}
-	decodedPath, err := url.QueryUnescape(filePath)
-	if err != nil {
-		handler.Respond(c, http.StatusBadRequest, "文件路径解码失败", nil)
-		return
-	}
-	filePath = decodedPath
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//filePath := c.Query("path")
+	//if filePath == "" {
+	//	handler.Respond(c, http.StatusBadRequest, "文件路径不能为空", nil)
+	//	return
+	//}
+	//decodedPath, err := url.QueryUnescape(filePath)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, "文件路径解码失败", nil)
+	//	return
+	//}
+	//filePath = decodedPath
+	//
+	//if isProtectedPath(filePath) {
+	//	handler.Respond(c, http.StatusForbidden, "无法查看受保护文件的内容", nil)
+	//	return
+	//}
+	//
+	//content, err := os.ReadFile(filePath)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	fmt.Println(err)
+	//	return
+	//}
 
-	if isProtectedPath(filePath) {
-		handler.Respond(c, http.StatusForbidden, "无法查看受保护文件的内容", nil)
-		return
-	}
-
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		fmt.Println(err)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "", gin.H{
-		"content": string(content),
-		"path":    filePath,
-	})
+	//handler.Respond(c, http.StatusOK, "", gin.H{
+	//	"content": string(content),
+	//	"path":    filePath,
+	//})
 }
 
 // SaveFileContent 保存文件内容
@@ -1032,26 +1050,28 @@ func GetFileContent(c *gin.Context) {
 // @Failure 500 {object} handler.Response "服务器内部错误"
 // @Router /auth/files/content [post]
 func SaveFileContent(c *gin.Context) {
-	var req struct {
-		Path    string `json:"path"`
-		Content string `json:"content"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handler.Respond(c, http.StatusBadRequest, "请求参数错误", nil)
-		return
-	}
-
-	if isProtectedPath(req.Path) {
-		handler.Respond(c, http.StatusForbidden, "无法修改受保护的文件", nil)
-		return
-	}
-
-	err := os.WriteFile(req.Path, []byte(req.Content), 0644)
-	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
-		return
-	}
-
-	handler.Respond(c, http.StatusOK, "文件保存成功", nil)
+	handler.Respond(c, http.StatusBadRequest, "演示版本禁止操作", nil)
+	return
+	//var req struct {
+	//	Path    string `json:"path"`
+	//	Content string `json:"content"`
+	//}
+	//
+	//if err := c.ShouldBindJSON(&req); err != nil {
+	//	handler.Respond(c, http.StatusBadRequest, "请求参数错误", nil)
+	//	return
+	//}
+	//
+	//if isProtectedPath(req.Path) {
+	//	handler.Respond(c, http.StatusForbidden, "无法修改受保护的文件", nil)
+	//	return
+	//}
+	//
+	//err := os.WriteFile(req.Path, []byte(req.Content), 0644)
+	//if err != nil {
+	//	handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+	//	return
+	//}
+	//
+	//handler.Respond(c, http.StatusOK, "文件保存成功", nil)
 }
