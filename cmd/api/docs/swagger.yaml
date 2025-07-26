@@ -1,15 +1,89 @@
 basePath: /api
 definitions:
+  ai.APIResponse:
+    properties:
+      data:
+        description: 响应数据
+      error:
+        description: 错误信息
+        example: ""
+        type: string
+      success:
+        description: 操作是否成功
+        example: true
+        type: boolean
+    type: object
+  ai.AnalyzeFilesRequest:
+    properties:
+      files:
+        description: 要分析的文件列表JSON字符串
+        example: '[{''name'': ''app.log'', ''size'': 1024, ''modified'': ''2024-01-01''},
+          {''name'': ''temp.txt'', ''size'': 512, ''modified'': ''2023-12-01''}]'
+        type: string
+    required:
+    - files
+    type: object
+  ai.AnalyzeLogRequest:
+    properties:
+      logContent:
+        description: 要分析的日志内容
+        example: '[ERROR] 2024-01-01 12:00:00 Database connection failed'
+        type: string
+    required:
+    - logContent
+    type: object
+  ai.FunctionDefinition:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      parameters:
+        additionalProperties: true
+        type: object
+    type: object
+  ai.QueryRequest:
+    properties:
+      query:
+        description: 自然语言查询内容
+        example: 连接到数据库 ./data.db 并显示所有表
+        type: string
+    required:
+    - query
+    type: object
+  ai.ToolCallRequest:
+    properties:
+      tool_calls:
+        description: JSON格式的工具调用数组
+        example: '[{"id":"call_1","type":"function","function":{"name":"connect_sqlite_database","arguments":{"database_path":"./test.db"}}}]'
+        type: string
+    required:
+    - tool_calls
+    type: object
+  ai.ToolCallResult:
+    properties:
+      error:
+        type: string
+      result: {}
+      success:
+        type: boolean
+      tool_call_id:
+        type: string
+    type: object
+  ai.ToolDefinition:
+    properties:
+      function:
+        $ref: '#/definitions/ai.FunctionDefinition'
+      type:
+        type: string
+    type: object
   auth.LoginRequest:
     properties:
       password:
-        example: password123
-        minLength: 6
+        example: Abc123456
         type: string
       username:
-        example: admin
-        maxLength: 50
-        minLength: 3
+        example: demo
         type: string
     required:
     - password
@@ -376,7 +450,7 @@ info:
   contact:
     email: support@etapanel.com
     name: EtaPanel Support
-    url: https://github.com/EtaPanel-dev/Eta-Panel
+    url: https://github.com/EtaPanel-dev/EtaPanel
   description: EtaPanel 服务器管理面板后端API文档，提供系统监控、文件管理、Nginx配置、SSL证书管理等功能
   license:
     name: MIT
@@ -850,6 +924,287 @@ paths:
       summary: 更新SSL证书
       tags:
       - SSL证书管理
+  /api/auth/ai/execute:
+    post:
+      consumes:
+      - application/json
+      description: 直接执行预定义的数据库操作工具，支持批量调用
+      parameters:
+      - description: 工具调用请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ai.ToolCallRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 执行成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/ai.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ai.ToolCallResult'
+                  type: array
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "500":
+          description: 执行失败
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 直接执行数据库工具调用
+      tags:
+      - AI工具链
+  /api/auth/ai/files:
+    post:
+      consumes:
+      - application/json
+      description: 使用Kimi AI分析文件列表，识别可清理的文件、重复文件和存储优化建议
+      parameters:
+      - description: 文件分析请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ai.AnalyzeFilesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分析结果，包含清理建议、文件分类等
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  type: array
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 智能文件分析和清理建议
+      tags:
+      - AI助手
+  /api/auth/ai/health:
+    get:
+      description: 检查AI服务和相关组件的健康状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 服务健康
+          schema:
+            allOf:
+            - $ref: '#/definitions/ai.APIResponse'
+            - properties:
+                data:
+                  properties:
+                    status:
+                      type: string
+                  type: object
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "503":
+          description: 服务不可用
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: AI服务健康状态检查
+      tags:
+      - AI工具链
+  /api/auth/ai/log:
+    post:
+      consumes:
+      - application/json
+      description: 使用Kimi AI分析日志内容，识别错误模式、异常情况和潜在问题
+      parameters:
+      - description: 日志分析请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ai.AnalyzeLogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分析结果，包含问题识别、建议解决方案等
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  type: array
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - BearerAuth: []
+      summary: 智能日志分析
+      tags:
+      - AI助手
+  /api/auth/ai/query:
+    post:
+      consumes:
+      - application/json
+      description: 使用自然语言与SQLite数据库进行交互，AI会自动将自然语言转换为相应的数据库操作
+      parameters:
+      - description: 查询请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ai.QueryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 查询成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/ai.APIResponse'
+            - properties:
+                data:
+                  properties:
+                    response:
+                      type: string
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 自然语言数据库查询
+      tags:
+      - AI工具链
+  /api/auth/ai/tools:
+    get:
+      description: 获取所有可用的数据库操作工具及其详细信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/ai.APIResponse'
+            - properties:
+                data:
+                  properties:
+                    count:
+                      type: integer
+                    tools:
+                      items:
+                        $ref: '#/definitions/ai.ToolDefinition'
+                      type: array
+                  type: object
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取可用的数据库工具列表
+      tags:
+      - AI工具链
+  /api/auth/ai/tools/{name}:
+    get:
+      description: 根据工具名称获取特定数据库工具的详细配置和参数信息
+      parameters:
+      - description: 工具名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/ai.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/ai.ToolDefinition'
+              type: object
+        "400":
+          description: 工具名称未提供
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+        "404":
+          description: 工具不存在
+          schema:
+            $ref: '#/definitions/ai.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取特定工具的详细信息
+      tags:
+      - AI工具链
   /api/auth/crontab:
     get:
       consumes:

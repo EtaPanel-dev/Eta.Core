@@ -1,14 +1,15 @@
 package main
 
 import (
-	_ "github.com/EtaPanel-dev/Eta-Panel/core/cmd/api/docs"
-
 	"fmt"
 	"log"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/config"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/router"
+	_ "github.com/EtaPanel-dev/EtaPanel/core/cmd/api/docs"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/middleware"
+
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/config"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/router"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -20,7 +21,7 @@ import (
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name EtaPanel Support
-// @contact.url https://github.com/EtaPanel-dev/Eta-Panel
+// @contact.url https://github.com/EtaPanel-dev/EtaPanel
 // @contact.email support@etapanel.com
 
 // @license.name MIT
@@ -73,6 +74,12 @@ func main() {
 		log.Fatalf("database connection error: %s", err)
 	}
 
+	// 初始化IPFS客户端
+	if config.AppConfig.IPFS.Enabled {
+		middleware.InitIPFS(config.AppConfig.IPFS.URL)
+		log.Printf("IPFS客户端已初始化: %s", config.AppConfig.IPFS.URL)
+	}
+
 	// 设置Gin模式
 	gin.SetMode(gin.DebugMode)
 
@@ -84,8 +91,11 @@ func main() {
 	r.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 启动服务器
 	addr := fmt.Sprintf("%s:%d", config.AppConfig.Server.Host, config.AppConfig.Server.Port)
-	fmt.Printf("Server starting on %s\n", addr)
-
+	fmt.Printf("Server starting on %s\n", config.AppConfig.Server.Host)
+	log.Printf("API日志验证系统启动在端口 %s", config.AppConfig.Server.Port)
+	log.Println("功能特性:")
+	log.Printf("- IPFS存储: %v", config.AppConfig.IPFS.Enabled)
+	log.Printf("- Injective验证: %v", config.AppConfig.Injective.Enabled)
 	if err := r.Run(addr); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

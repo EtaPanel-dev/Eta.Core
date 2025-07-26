@@ -1,17 +1,16 @@
 package auth
 
 import (
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"time"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/config"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
-
-var jwtSecret = []byte("your-secret-key") // 在生产环境中应该从配置文件读取
 
 type Claims struct {
 	Username string `json:"username"`
@@ -20,8 +19,8 @@ type Claims struct {
 
 // LoginRequest 登录请求参数
 type LoginRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=50" example:"admin" validate:"required,min=3,max=50"`
-	Password string `json:"password" binding:"required,min=6" example:"password123" validate:"required,min=6"`
+	Username string `json:"username" binding:"required" example:"demo" `
+	Password string `json:"password" binding:"required" example:"Abc123456" `
 }
 
 // LoginResponse 登录响应
@@ -49,6 +48,7 @@ func Login(c *gin.Context) {
 		handler.Respond(c, http.StatusBadRequest, "请求参数错误: "+err.Error(), nil)
 		return
 	}
+
 	if bcrypt.CompareHashAndPassword([]byte("$2a$10$..."), []byte(loginData.Password)) != nil {
 		handler.Respond(c, http.StatusUnauthorized, "密码错误", 401)
 		return
@@ -65,6 +65,7 @@ func Login(c *gin.Context) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	jwtSecret := []byte(config.AppConfig.JWT.Secret)
 	tokenString, err := token.SignedString(jwtSecret)
 	if err != nil {
 		handler.Respond(c, http.StatusInternalServerError, "生成密钥失败", nil)

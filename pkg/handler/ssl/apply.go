@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 	"github.com/gin-gonic/gin"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"golang.org/x/crypto/acme"

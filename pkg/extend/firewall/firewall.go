@@ -3,7 +3,7 @@ package firewall
 import (
 	"fmt"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/extend/cmd"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/extend/cmd"
 )
 
 func UpdatePort(oldPort, newPort string) error {

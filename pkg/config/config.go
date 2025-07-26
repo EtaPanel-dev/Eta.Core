@@ -8,8 +8,11 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig   `toml:"server"`
-	Database DatabaseConfig `toml:"database"`
+	Server    ServerConfig    `toml:"server"`
+	Database  DatabaseConfig  `toml:"database"`
+	JWT       JWTConfig       `toml:"jwt"`
+	IPFS      IPFSConfig      `toml:"ipfs"`
+	Injective InjectiveConfig `json:"injective" toml:"injective"` // Injective链配置
 }
 
 type ServerConfig struct {
@@ -18,15 +21,32 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Path string `toml:"path"` // SQLite 数据库文件路径
+	Path string `toml:"path"`
 }
 
+type JWTConfig struct {
+	Secret string `toml:"secret"`
+}
+
+type IPFSConfig struct {
+	URL     string `toml:"url"`
+	Enabled bool   `toml:"enabled"`
+}
+
+type InjectiveConfig struct {
+	Enabled     bool   `json:"enabled"`
+	NetworkType string `json:"network_type"` // mainnet, testnet
+	ChainID     string `json:"chain_id"`
+	GRPCUrl     string `json:"grpc_url"`
+	PrivateKey  string `json:"private_key"`
+	GasPrice    string `json:"gas_price"`
+}
+
+// AppConfig 全局应用配置
 var AppConfig *Config
 
 func Init() error {
-	// 检查配置文件是否存在
 	if _, err := os.Stat("config.toml"); os.IsNotExist(err) {
-		// 配置文件不存在，创建默认配置
 		createDefaultConfig()
 		log.Println("Created default config.toml file. Please modify it and restart the application.")
 		os.Exit(0)
@@ -55,6 +75,21 @@ func createDefaultConfig() {
 		},
 		Database: DatabaseConfig{
 			Path: "data.db",
+		},
+		JWT: JWTConfig{
+			Secret: "your_jwt_secret",
+		},
+		IPFS: IPFSConfig{
+			URL:     "http://localhost:5001",
+			Enabled: true,
+		},
+		Injective: InjectiveConfig{
+			Enabled:     false,
+			NetworkType: "testnet",
+			ChainID:     "injective-888",
+			GRPCUrl:     "http://localhost:9090",
+			PrivateKey:  "",
+			GasPrice:    "0.025inj",
 		},
 	}
 

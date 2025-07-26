@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
-	ssl2 "github.com/EtaPanel-dev/Eta-Panel/core/pkg/ssl"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
+	ssl2 "github.com/EtaPanel-dev/EtaPanel/core/pkg/ssl"
 	"github.com/gin-gonic/gin"
 )
 

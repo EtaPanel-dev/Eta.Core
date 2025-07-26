@@ -3,9 +3,9 @@ package ssl
 import (
 	"net/http"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 	"github.com/gin-gonic/gin"
 )
 

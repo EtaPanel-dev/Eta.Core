@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/extend/ws"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/extend/ws"
 	"github.com/gorilla/websocket"
 )
 

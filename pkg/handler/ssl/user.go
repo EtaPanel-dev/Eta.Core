@@ -1,8 +1,8 @@
 package ssl
 
 import (
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/database"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 )
 
 func GetUserById(id int) (ssl.AcmeUser, error) {

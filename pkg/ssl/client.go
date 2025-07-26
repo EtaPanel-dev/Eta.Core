@@ -6,12 +6,13 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
+	"net/http"
+	"time"
+
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
-	"net/http"
-	"time"
 )
 
 func NewConfigWithProxy(user registration.User, accountType, customCaURL string) *lego.Config {

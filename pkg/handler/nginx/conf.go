@@ -3,8 +3,8 @@ package nginx
 import (
 	"net/http"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/handler"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models"
 	"github.com/gin-gonic/gin"
 )
 

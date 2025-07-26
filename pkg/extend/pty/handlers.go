@@ -3,7 +3,7 @@ package pty
 import (
 	"net/http"
 
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/extend/ws"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/extend/ws"
 )
 
 // RegisterPTYHandler 注册PTY WebSocket处理器

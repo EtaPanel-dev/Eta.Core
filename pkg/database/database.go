@@ -1,11 +1,12 @@
 package database
 
 import (
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/config"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models"
-	"github.com/EtaPanel-dev/Eta-Panel/core/pkg/models/ssl"
-	"gorm.io/driver/sqlite"
 	"log"
+
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/config"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
+	"gorm.io/driver/sqlite"
 
 	"gorm.io/gorm"
 )

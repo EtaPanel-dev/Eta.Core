@@ -207,6 +207,6 @@ tail -f /var/log/etapanel/error.log
 
 ## 支持
 
-- GitHub: https://github.com/EtaPanel-dev/Eta-Panel
+- GitHub: https://github.com/EtaPanel-dev/EtaPanel
 - 文档: https://docs.etapanel.com
-- 问题反馈: https://github.com/EtaPanel-dev/Eta-Panel/issues
+- 问题反馈: https://github.com/EtaPanel-dev/EtaPanel/issues
