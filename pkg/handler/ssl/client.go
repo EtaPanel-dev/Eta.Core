@@ -83,7 +83,7 @@ func CreateAcmeClient(c *gin.Context) {
 	webSiteAcmeAccount := &ssl.WebsiteAcmeAccount{
 		BaseModel: baseModel,
 		Email:     req.Email,
-		CaDirURL:  ssl2.GetCaDirURL(req.KeyType, ""),
+		CaDirURL:  req.Server,
 		KeyType:   req.KeyType,
 	}
 

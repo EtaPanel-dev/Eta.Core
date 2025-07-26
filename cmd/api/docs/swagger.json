@@ -3502,6 +3502,9 @@
                 "isDir": {
                     "type": "boolean"
                 },
+                "isSymlink": {
+                    "type": "boolean"
+                },
                 "modTime": {
                     "type": "string"
                 },
@@ -3837,7 +3840,7 @@
             "required": [
                 "email",
                 "key_type",
-                "server_url"
+                "server"
             ],
             "properties": {
                 "email": {
@@ -3846,7 +3849,7 @@
                 "key_type": {
                     "type": "string"
                 },
-                "server_url": {
+                "server": {
                     "type": "string"
                 }
             }

@@ -9,6 +9,7 @@ type FileInfo struct {
 	Mode        string    `json:"mode"`
 	ModTime     time.Time `json:"modTime"`
 	IsDir       bool      `json:"isDir"`
+	IsSymlink   bool      `json:"isSymlink"`
 	Permissions string    `json:"permissions"`
 	Owner       string    `json:"owner"`
 	Group       string    `json:"group"`

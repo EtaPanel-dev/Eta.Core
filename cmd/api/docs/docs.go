@@ -3504,6 +3504,9 @@ const docTemplate = `{
                 "isDir": {
                     "type": "boolean"
                 },
+                "isSymlink": {
+                    "type": "boolean"
+                },
                 "modTime": {
                     "type": "string"
                 },
@@ -3839,7 +3842,7 @@ const docTemplate = `{
             "required": [
                 "email",
                 "key_type",
-                "server_url"
+                "server"
             ],
             "properties": {
                 "email": {
@@ -3848,7 +3851,7 @@ const docTemplate = `{
                 "key_type": {
                     "type": "string"
                 },
-                "server_url": {
+                "server": {
                     "type": "string"
                 }
             }

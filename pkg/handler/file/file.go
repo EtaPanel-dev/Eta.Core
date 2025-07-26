@@ -59,13 +59,27 @@ func ListFiles(c *gin.Context) {
 
 	var fileInfos []models.FileInfo
 	for _, file := range files {
-		info, err := file.Info()
+		fullPath := filepath.Join(path, file.Name())
+		info, err := os.Lstat(fullPath) // 使用 os.Lstat 获取符号链接本身的信息
 		if err != nil {
 			continue
 		}
 
-		fullPath := filepath.Join(path, file.Name())
-		stat := info.Sys().(*syscall.Stat_t)
+		isSymlink := info.Mode()&os.ModeSymlink != 0
+		isDir := info.IsDir()
+
+		// 如果是符号链接且指向的是目录，则 IsDir 应该为 true
+		if isSymlink {
+			if resolvedInfo, err := os.Stat(fullPath); err == nil {
+				isDir = resolvedInfo.IsDir()
+			}
+		}
+
+		var uid, gid string
+		if stat, ok := info.Sys().(*syscall.Stat_t); ok {
+			uid = fmt.Sprintf("%d", stat.Uid)
+			gid = fmt.Sprintf("%d", stat.Gid)
+		}
 
 		fileInfo := models.FileInfo{
 			Name:        file.Name(),
@@ -73,10 +87,11 @@ func ListFiles(c *gin.Context) {
 			Size:        info.Size(),
 			Mode:        info.Mode().String(),
 			ModTime:     info.ModTime(),
-			IsDir:       file.IsDir(),
+			IsDir:       isDir,
+			IsSymlink:   isSymlink,
 			Permissions: fmt.Sprintf("%o", info.Mode().Perm()),
-			Owner:       fmt.Sprintf("%d", stat.Uid),
-			Group:       fmt.Sprintf("%d", stat.Gid),
+			Owner:       uid,
+			Group:       gid,
 		}
 		fileInfos = append(fileInfos, fileInfo)
 	}
@@ -991,10 +1006,10 @@ func GetFileContent(c *gin.Context) {
 
 	content, err := os.ReadFile(filePath)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err, nil)
+		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+		fmt.Println(err)
 		return
 	}
-	fmt.Println(err)
 
 	handler.Respond(c, http.StatusOK, "", gin.H{
 		"content": string(content),

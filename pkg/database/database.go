@@ -33,6 +33,7 @@ func (d *Database) Connect() error {
 		&models.User{},
 		&models.Server{},
 		&models.AuthToken{},
+		&ssl.Ssl{},
 		&ssl.AcmeClient{},
 		&ssl.WebsiteAcmeAccount{},
 		&ssl.AcmeUser{},

@@ -17,9 +17,9 @@ type AcmeClient struct {
 }
 
 type CreateAcmeClientRequest struct {
-	Email     string `json:"email" binding:"required,email"`
-	KeyType   string `json:"key_type" binding:"required"`
-	ServerURL string `json:"server_url" binding:"required,url"`
+	Email   string `json:"email" binding:"required,email"`
+	KeyType string `json:"key_type" binding:"required"`
+	Server  string `json:"server" binding:"required,server"`
 }
 
 type AcmeClientResponse struct {
