@@ -144,7 +144,7 @@ swag init -g cmd/main.go -o cmd/api/docs
 // @Param param_name param_type data_type true "参数描述"
 // @Success 200 {object} ResponseType "成功描述"
 // @Failure 400 {object} handler.Response "错误描述"
-// @Router /api/path [method]
+// @Router /path [method]
 func FunctionName(c *gin.Context) {
     // 实现代码
 }

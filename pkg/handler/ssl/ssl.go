@@ -1,9 +1,9 @@
 package ssl
 
 import (
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"net/http"
 
-	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ import (
 // @Success 200 {object} handler.Response{data=[]object} "获取成功"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/ssl [get]
+// @Router /auth/acme/ssl [get]
 func GetSSL(c *gin.Context) {
 	// 从数据库获取ssl列表
 	var sslList []ssl.Ssl
@@ -43,7 +43,7 @@ func GetSSL(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "证书不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/ssl/{id} [delete]
+// @Router /auth/acme/ssl/{id} [delete]
 func DeleteSSL(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -80,7 +80,7 @@ func DeleteSSL(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "证书不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/ssl/{id} [put]
+// @Router /auth/acme/ssl/{id} [put]
 func UpdateSSL(c *gin.Context) {
 	var sslEntry ssl.Ssl
 	db := database.DbConn

@@ -5,7 +5,9 @@ import (
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/ai"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/auth"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/crontab"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/docker"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/file"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/firewall"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/log"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/nginx"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler/setting"
@@ -33,8 +35,8 @@ func LoadRoutes(r *gin.Engine) {
 		// @Accept json
 		// @Produce json
 		// @Success 200 {object} object{code=int,message=string} "服务正常"
-		// @Router /api/public [get]
-		apiPublicRouter.GET("/", func(c *gin.Context) {
+		// @Router /public [get]
+		apiPublicRouter.GET("", func(c *gin.Context) {
 			c.JSON(200, gin.H{"code": 200, "message": "Eta Panel API Server Is OK!"})
 		})
 		apiPublicRouter.POST("/login", auth.Login)
@@ -42,17 +44,19 @@ func LoadRoutes(r *gin.Engine) {
 
 	// 授权API
 	apiAuthRouter := r.Group("/api/auth")
-	apiAuthRouter.Use(middleware.JWTAuth()) // 添加JWT认证中间件
+	//apiAuthRouter.Use(middleware.JWTAuth()) // 添加JWT认证中间件
 	{
+		apiAuthRouter.POST("/change-password", auth.ChangePassword)
+
 		// 文件管理API
 		apiFileRouter := apiAuthRouter.Group("/files")
 		{
-			apiFileRouter.GET("/", file.ListFiles)
+			apiFileRouter.GET("", file.ListFiles)
 			apiFileRouter.GET("/download", file.DownloadFile)
 			apiFileRouter.POST("/upload", file.UploadFile)
 			apiFileRouter.POST("/move", file.MoveFile)
 			apiFileRouter.POST("/copy", file.CopyFile)
-			apiFileRouter.DELETE("/", file.DeleteFile)
+			apiFileRouter.DELETE("", file.DeleteFile)
 			apiFileRouter.POST("/mkdir", file.CreateDirectory)
 			apiFileRouter.POST("/compress", file.CompressFiles)
 			apiFileRouter.POST("/extract", file.ExtractFiles)
@@ -65,7 +69,7 @@ func LoadRoutes(r *gin.Engine) {
 		// 系统监控API
 		apiSysRouter := apiAuthRouter.Group("/system")
 		{
-			apiSysRouter.GET("/", system.GetSystemInfo)
+			apiSysRouter.GET("", system.GetSystemInfo)
 			apiSysRouter.GET("/cpu", system.GetCPUInfo)
 			apiSysRouter.GET("/memory", system.GetMemoryInfo)
 			apiSysRouter.GET("/disk", system.GetDiskInfo)
@@ -77,8 +81,8 @@ func LoadRoutes(r *gin.Engine) {
 		// 定时任务API
 		apiCronRouter := apiAuthRouter.Group("/crontab")
 		{
-			apiCronRouter.GET("/", crontab.GetCrontabList)
-			apiCronRouter.POST("/", crontab.CreateCrontabEntry)
+			apiCronRouter.GET("", crontab.GetCrontabList)
+			apiCronRouter.POST("", crontab.CreateCrontabEntry)
 			apiCronRouter.PUT("/:id", crontab.UpdateCrontabEntry)
 			apiCronRouter.DELETE("/:id", crontab.DeleteCrontabEntry)
 			apiCronRouter.POST("/:id/toggle", crontab.ToggleCrontabEntry)
@@ -87,8 +91,8 @@ func LoadRoutes(r *gin.Engine) {
 		// SSL证书管理API
 		apiSslRouter := apiAuthRouter.Group("/acme/ssl")
 		{
-			apiSslRouter.GET("/", ssl.GetSSL)
-			apiSslRouter.POST("/", ssl.IssueSSL)
+			apiSslRouter.GET("", ssl.GetSSL)
+			apiSslRouter.POST("", ssl.IssueSSL)
 			apiSslRouter.DELETE("/:id", ssl.DeleteSSL)
 			apiSslRouter.PUT("/:id", ssl.UpdateSSL)
 		}
@@ -96,8 +100,8 @@ func LoadRoutes(r *gin.Engine) {
 		// ACME客户端管理API
 		apiSslClientRouter := apiAuthRouter.Group("/acme/clients")
 		{
-			apiSslClientRouter.GET("/", ssl.GetAcmeClients)
-			apiSslClientRouter.POST("/", ssl.CreateAcmeClient)
+			apiSslClientRouter.GET("", ssl.GetAcmeClients)
+			apiSslClientRouter.POST("", ssl.CreateAcmeClient)
 			apiSslClientRouter.PUT("/:id", ssl.UpdateAcmeClient)
 			apiSslClientRouter.DELETE("/:id", ssl.DeleteAcmeClient)
 		}
@@ -105,8 +109,8 @@ func LoadRoutes(r *gin.Engine) {
 		// DNS账户管理API
 		apiSslDnsRouter := apiAuthRouter.Group("/acme/dns")
 		{
-			apiSslDnsRouter.GET("/", ssl.GetDnsAccounts)
-			apiSslDnsRouter.POST("/", ssl.CreateDnsAccount)
+			apiSslDnsRouter.GET("", ssl.GetDnsAccounts)
+			apiSslDnsRouter.POST("", ssl.CreateDnsAccount)
 			apiSslDnsRouter.PUT("/:id", ssl.UpdateDnsAccount)
 			apiSslDnsRouter.DELETE("/:id", ssl.DeleteDnsAccount)
 		}
@@ -128,41 +132,66 @@ func LoadRoutes(r *gin.Engine) {
 			apiNginxRouter.POST("/test", nginx.TestNginxConfig)
 		}
 
-		// AI工具链API - 完整的SQLite数据库管理
+		// AI工具链API
 		apiAiRouter := apiAuthRouter.Group("/ai")
 		{
-			// AI日志和文件分析（原有功能）
 			apiAiRouter.POST("/log", ai.AnalyzeLog)
 			apiAiRouter.POST("/files", ai.AnalyzeFiles)
-
-			// AI数据库工具链（新增功能）
-			apiAiRouter.POST("/query", ai.ProcessQuery)       // 自然语言数据库查询
-			apiAiRouter.POST("/execute", ai.ExecuteToolCalls) // 直接执行数据库工具调用
-			apiAiRouter.GET("/tools", ai.GetAvailableTools)   // 获取可用的数据库工具列表
-			apiAiRouter.GET("/tools/:name", ai.GetTool)       // 获取特定工具的详细信息
-			apiAiRouter.GET("/health", ai.HealthCheck)        // AI服务健康状态检查
 		}
 
 		// 系统设置API
 		apiSettingRouter := apiAuthRouter.Group("/setting")
 		{
-			apiSettingRouter.GET("/", setting.GetSettings)
-			apiSettingRouter.PUT("/", setting.SaveSettings)
+			apiSettingRouter.PUT("", setting.SaveSettings)
+			apiSettingRouter.GET("", setting.GetSettings)
 		}
+
+		// 防火墙管理API
+		apiFirewallRouter := apiAuthRouter.Group("/firewall")
+		{
+			apiFirewallRouter.GET("/status", firewall.GetFirewallStatus)
+			apiFirewallRouter.POST("/enable", firewall.EnableFirewall)
+			apiFirewallRouter.POST("/disable", firewall.DisableFirewall)
+			apiFirewallRouter.POST("/rules", firewall.AddFirewallRule)
+			apiFirewallRouter.DELETE("/rules/:id", firewall.DeleteFirewallRule)
+			apiFirewallRouter.POST("/reset", firewall.ResetFirewall)
+			apiFirewallRouter.POST("/allow-ssh", firewall.AllowSSH)
+			apiFirewallRouter.POST("/deny-all", firewall.DenyAll)
+		}
+
+		// 日志管理API
+		apiLogRouter := r.Group("/log")
+		{
+			apiLogRouter.POST("/query", log.GetLogByRequestID)
+			apiLogRouter.POST("/verify", log.VerifyLogIntegrity)
+			apiLogRouter.GET("/list", log.ListLogHashes)
+			apiLogRouter.GET("/stats", log.GetLogStats)
+		}
+		// Docker管理API
+		apiDockerRouter := r.Group("/docker")
+		{
+			// 镜像管理
+			apiDockerRouter.GET("/images", docker.GetDockerImages)
+			apiDockerRouter.POST("/images/pull", docker.PullDockerImage)
+			apiDockerRouter.DELETE("/images/:id", docker.DeleteDockerImage)
+
+			// 容器管理
+			apiDockerRouter.GET("/containers", docker.GetDockerContainers)
+			apiDockerRouter.POST("/containers/run", docker.RunDockerContainer)
+			apiDockerRouter.POST("/containers/:id/start", docker.StartDockerContainer)
+			apiDockerRouter.POST("/containers/:id/stop", docker.StopDockerContainer)
+			apiDockerRouter.DELETE("/containers/:id", docker.RemoveDockerContainer)
+
+			// 终端连接
+			apiDockerRouter.GET("/containers/:id/terminal", docker.DockerTerminal)
+
+			// 镜像源管理
+			apiDockerRouter.POST("/registry", docker.SetDockerRegistry)
+		}
+
+		// WebSocket连接（PTY终端）
+		r.GET("/ws/pty", gin.WrapH(pty.RegisterPTYHandler("/pty")))
 	}
-
-	// 日志管理API（无需认证）
-	apiLogRouter := r.Group("/api/log")
-	{
-		apiLogRouter.POST("/query", log.GetLogByRequestID)
-		apiLogRouter.POST("/verify", log.VerifyLogIntegrity)
-		apiLogRouter.GET("/list", log.ListLogHashes)
-		apiLogRouter.GET("/stats", log.GetLogStats)
-	}
-
-	// WebSocket连接（PTY终端）
-	r.GET("/ws/pty", gin.WrapH(pty.RegisterPTYHandler("/pty")))
-
 	// 404错误处理
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{

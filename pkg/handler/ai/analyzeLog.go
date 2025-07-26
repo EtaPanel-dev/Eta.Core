@@ -11,7 +11,7 @@ import (
 
 // AnalyzeLogRequest 日志分析请求结构
 type AnalyzeLogRequest struct {
-	LogContent string `json:"logContent" binding:"required" example:"[ERROR] 2024-01-01 12:00:00 Database connection failed"` // 要分析的日志内容
+	LogContent string `json:"logContent" binding:"required" example:"[ERROR] 2024-01-01 12:00:00 Database connection failed"`
 }
 
 // AnalyzeLog 分析日志
@@ -26,7 +26,7 @@ type AnalyzeLogRequest struct {
 // @Failure 400 {object} handler.Response "请求参数错误"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/ai/log [post]
+// @Router /auth/ai/log [post]
 func AnalyzeLog(c *gin.Context) {
 	var request AnalyzeLogRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

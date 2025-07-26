@@ -1,14 +1,11 @@
 package middleware
 
 import (
-	"net/http"
-	"strings"
-
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"net/http"
 )
-
-var jwtSecret = []byte("your-secret-key") // 在生产环境中应该从配置文件读取
 
 type Claims struct {
 	Username string `json:"username"`
@@ -30,26 +27,26 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		// 检查Bearer前缀
-		parts := strings.SplitN(authHeader, " ", 2)
-		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code":    401,
-				"message": "Authorization格式错误",
-			})
-			c.Abort()
-			return
-		}
+		//parts := strings.SplitN(authHeader, " ", 2)
+		//if !(len(parts) == 2 && parts[0] == "Bearer") {
+		//	c.JSON(http.StatusUnauthorized, gin.H{
+		//		"code":    401,
+		//		"message": "Authorization格式错误",
+		//	})
+		//	c.Abort()
+		//	return
+		//}
 
-		// 解析token
-		tokenString := parts[1]
-		token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		// 解析token，使用配置文件中的密钥
+		jwtSecret := []byte(config.AppConfig.JWT.Secret)
+		token, err := jwt.ParseWithClaims(authHeader, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 			return jwtSecret, nil
 		})
 
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code":    401,
-				"message": "Token解析失败",
+				"message": "Token解析失败: " + err.Error(),
 			})
 			c.Abort()
 			return

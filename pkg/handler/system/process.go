@@ -2,7 +2,6 @@ package system
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -16,7 +15,7 @@ import (
 
 // getProcessCount 获取进程数量
 func getProcessCount() int {
-	data, err := ioutil.ReadFile("/proc/stat")
+	data, err := os.ReadFile("/proc/stat")
 	if err != nil {
 		return 0
 	}
@@ -33,7 +32,28 @@ func getProcessCount() int {
 		}
 	}
 
-	return 0
+	// 如果无法从/proc/stat获取，则统计/proc目录下的进程数
+	procDir, err := os.Open("/proc")
+	if err != nil {
+		return 0
+	}
+	defer procDir.Close()
+
+	entries, err := procDir.Readdir(-1)
+	if err != nil {
+		return 0
+	}
+
+	count := 0
+	for _, entry := range entries {
+		if entry.IsDir() {
+			if _, err := strconv.Atoi(entry.Name()); err == nil {
+				count++
+			}
+		}
+	}
+
+	return count
 }
 
 // GetProcessList 获取进程列表
@@ -46,7 +66,7 @@ func getProcessCount() int {
 // @Success 200 {object} handler.Response{data=object{processes=[]models.ProcessInfo}} "获取成功"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/system/processes [get]
+// @Router /auth/system/processes [get]
 func GetProcessList(c *gin.Context) {
 	processes := getProcessList()
 	handler.Respond(c, http.StatusOK, nil, gin.H{"processes": processes})
@@ -65,7 +85,7 @@ func GetProcessList(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "无法终止系统关键进程"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/system/process/kill [post]
+// @Router /auth/system/process/kill [post]
 func KillProcess(c *gin.Context) {
 	var req struct {
 		PID    int    `json:"pid"`
@@ -216,7 +236,7 @@ func getProcessInfo(pid int) *models.ProcessInfo {
 	process := &models.ProcessInfo{PId: pid}
 
 	// 读取进程状态
-	if data, err := ioutil.ReadFile(procPath + "/stat"); err == nil {
+	if data, err := os.ReadFile(procPath + "/stat"); err == nil {
 		fields := strings.Fields(string(data))
 		if len(fields) >= 3 {
 			process.Name = strings.Trim(fields[1], "()")
@@ -225,14 +245,19 @@ func getProcessInfo(pid int) *models.ProcessInfo {
 	}
 
 	// 读取进程命令行
-	if data, err := ioutil.ReadFile(procPath + "/cmdline"); err == nil {
+	if data, err := os.ReadFile(procPath + "/cmdline"); err == nil {
 		cmdline := string(data)
-		cmdline = strings.ReplaceAll(cmdline, "\x00", " ")
-		process.Command = strings.TrimSpace(cmdline)
+		if cmdline != "" {
+			cmdline = strings.ReplaceAll(cmdline, "\x00", " ")
+			process.Command = strings.TrimSpace(cmdline)
+		} else {
+			// 如果cmdline为空，使用进程名
+			process.Command = process.Name
+		}
 	}
 
 	// 读取进程内存信息
-	if data, err := ioutil.ReadFile(procPath + "/status"); err == nil {
+	if data, err := os.ReadFile(procPath + "/status"); err == nil {
 		lines := strings.Split(string(data), "\n")
 		for _, line := range lines {
 			if strings.HasPrefix(line, "VmRSS:") {
@@ -245,6 +270,11 @@ func getProcessInfo(pid int) *models.ProcessInfo {
 				break
 			}
 		}
+	}
+
+	// 如果进程名为空，设置为unknown
+	if process.Name == "" {
+		process.Name = "unknown"
 	}
 
 	return process

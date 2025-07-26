@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -41,7 +42,7 @@ func isProtectedPath(path string) bool {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files [get]
+// @Router /auth/files [get]
 func ListFiles(c *gin.Context) {
 	path := c.DefaultQuery("path", "/home")
 
@@ -80,10 +81,10 @@ func ListFiles(c *gin.Context) {
 		fileInfos = append(fileInfos, fileInfo)
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{
+	handler.Respond(c, http.StatusOK, nil, gin.H{
 		"files":       fileInfos,
 		"currentPath": path,
-	}, nil)
+	})
 }
 
 // DownloadFile 下载文件
@@ -99,7 +100,7 @@ func ListFiles(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 404 {object} handler.Response "文件不存在"
-// @Router /api/auth/files/download [get]
+// @Router /auth/files/download [get]
 func DownloadFile(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -144,7 +145,7 @@ func DownloadFile(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/upload [post]
+// @Router /auth/files/upload [post]
 func UploadFile(c *gin.Context) {
 	targetDir := c.PostForm("path")
 	if targetDir == "" {
@@ -204,7 +205,7 @@ func UploadFile(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/move [post]
+// @Router /auth/files/move [post]
 func MoveFile(c *gin.Context) {
 	var req struct {
 		Source string `json:"source"`
@@ -243,7 +244,7 @@ func MoveFile(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/copy [post]
+// @Router /auth/files/copy [post]
 func CopyFile(c *gin.Context) {
 	var req struct {
 		Source string `json:"source"`
@@ -309,7 +310,7 @@ func copyFile(src, dst string) error {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files [delete]
+// @Router /auth/files [delete]
 func DeleteFile(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -344,7 +345,7 @@ func DeleteFile(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/mkdir [post]
+// @Router /auth/files/mkdir [post]
 func CreateDirectory(c *gin.Context) {
 	var req struct {
 		Path string `json:"path"`
@@ -385,7 +386,7 @@ func CreateDirectory(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/compress [post]
+// @Router /auth/files/compress [post]
 func CompressFiles(c *gin.Context) {
 	var req struct {
 		Files      []string `json:"files"`
@@ -613,7 +614,7 @@ func createTarGz(files []string, output string) error {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/extract [post]
+// @Router /auth/files/extract [post]
 func ExtractFiles(c *gin.Context) {
 	var req struct {
 		FilePath   string `json:"filePath"`
@@ -853,7 +854,7 @@ func extractTarGz(src, dest string) error {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/permissions [get]
+// @Router /auth/files/permissions [get]
 func GetPermissions(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
@@ -897,7 +898,7 @@ func GetPermissions(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/permissions [post]
+// @Router /auth/files/permissions [post]
 func SetPermissions(c *gin.Context) {
 	var req struct {
 		Path        string `json:"path"`
@@ -969,13 +970,19 @@ func SetPermissions(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/content [get]
+// @Router /auth/files/content [get]
 func GetFileContent(c *gin.Context) {
 	filePath := c.Query("path")
 	if filePath == "" {
 		handler.Respond(c, http.StatusBadRequest, "文件路径不能为空", nil)
 		return
 	}
+	decodedPath, err := url.QueryUnescape(filePath)
+	if err != nil {
+		handler.Respond(c, http.StatusBadRequest, "文件路径解码失败", nil)
+		return
+	}
+	filePath = decodedPath
 
 	if isProtectedPath(filePath) {
 		handler.Respond(c, http.StatusForbidden, "无法查看受保护文件的内容", nil)
@@ -984,9 +991,10 @@ func GetFileContent(c *gin.Context) {
 
 	content, err := os.ReadFile(filePath)
 	if err != nil {
-		handler.Respond(c, http.StatusInternalServerError, err.Error(), nil)
+		handler.Respond(c, http.StatusInternalServerError, err, nil)
 		return
 	}
+	fmt.Println(err)
 
 	handler.Respond(c, http.StatusOK, "", gin.H{
 		"content": string(content),
@@ -1007,7 +1015,7 @@ func GetFileContent(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 403 {object} handler.Response "拒绝访问"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/files/content [post]
+// @Router /auth/files/content [post]
 func SaveFileContent(c *gin.Context) {
 	var req struct {
 		Path    string `json:"path"`

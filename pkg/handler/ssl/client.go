@@ -1,10 +1,10 @@
 package ssl
 
 import (
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"net/http"
 	"time"
 
-	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 	ssl2 "github.com/EtaPanel-dev/EtaPanel/core/pkg/ssl"
@@ -21,7 +21,7 @@ import (
 // @Success 200 {object} handler.Response{data=[]ssl.AcmeClientResponse} "获取成功"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/clients [get]
+// @Router /auth/acme/clients [get]
 func GetAcmeClients(c *gin.Context) {
 	var clients []ssl.AcmeClient
 	DbConn := database.DbConn
@@ -67,7 +67,7 @@ func GetAcmeClient(id int) (ssl.AcmeClient, error) {
 // @Failure 400 {object} handler.Response "请求参数错误"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/clients [post]
+// @Router /auth/acme/clients [post]
 func CreateAcmeClient(c *gin.Context) {
 	var req ssl.CreateAcmeClientRequest
 	DbConn := database.DbConn
@@ -119,7 +119,7 @@ func CreateAcmeClient(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "客户端不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/clients/{id} [put]
+// @Router /auth/acme/clients/{id} [put]
 func UpdateAcmeClient(c *gin.Context) {
 	id := c.Param("id")
 
@@ -162,7 +162,7 @@ func UpdateAcmeClient(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "客户端不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/clients/{id} [delete]
+// @Router /auth/acme/clients/{id} [delete]
 func DeleteAcmeClient(c *gin.Context) {
 	id := c.Param("id")
 

@@ -1,9 +1,9 @@
 package ssl
 
 import (
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"net/http"
 
-	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models/ssl"
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} handler.Response "请求参数错误"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/dns [post]
+// @Router /auth/acme/dns [post]
 func CreateDnsAccount(c *gin.Context) {
 	var req ssl.CreateDnsAccountRequest
 	var DbConn = database.DbConn
@@ -56,7 +56,7 @@ func CreateDnsAccount(c *gin.Context) {
 // @Success 200 {object} handler.Response{data=[]object} "获取成功"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/dns [get]
+// @Router /auth/acme/dns [get]
 func GetDnsAccounts(c *gin.Context) {
 	var dnsUsers []ssl.DnsUser
 	DbConn := database.DbConn
@@ -95,7 +95,7 @@ func GetDnsAccounts(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "账号不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/dns/{id} [delete]
+// @Router /auth/acme/dns/{id} [delete]
 func DeleteDnsAccount(c *gin.Context) {
 	id := c.Param("id")
 	var dnsUser ssl.DnsUser
@@ -128,7 +128,7 @@ func DeleteDnsAccount(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "账号不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/acme/dns/{id} [put]
+// @Router /auth/acme/dns/{id} [put]
 func UpdateDnsAccount(c *gin.Context) {
 	id := c.Param("id")
 	var req ssl.CreateDnsAccountRequest

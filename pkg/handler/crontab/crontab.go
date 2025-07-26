@@ -23,7 +23,7 @@ import (
 // @Success 200 {object} handler.Response{data=[]models.CrontabEntry} "获取成功"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/crontab [get]
+// @Router /auth/crontab [get]
 func GetCrontabList(c *gin.Context) {
 	entries, err := getCrontabEntries()
 	if err != nil {
@@ -46,7 +46,7 @@ func GetCrontabList(c *gin.Context) {
 // @Failure 400 {object} handler.Response "请求参数错误"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/crontab [post]
+// @Router /auth/crontab [post]
 func CreateCrontabEntry(c *gin.Context) {
 	var req models.CrontabRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -112,7 +112,7 @@ func CreateCrontabEntry(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "任务不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/crontab/{id} [put]
+// @Router /auth/crontab/{id} [put]
 func UpdateCrontabEntry(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -190,7 +190,7 @@ func UpdateCrontabEntry(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "任务不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/crontab/{id} [delete]
+// @Router /auth/crontab/{id} [delete]
 func DeleteCrontabEntry(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -244,7 +244,7 @@ func DeleteCrontabEntry(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "任务不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/crontab/{id}/toggle [post]
+// @Router /auth/crontab/{id}/toggle [post]
 func ToggleCrontabEntry(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)

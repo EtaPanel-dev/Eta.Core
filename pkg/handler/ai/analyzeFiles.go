@@ -26,7 +26,7 @@ type AnalyzeFilesRequest struct {
 // @Failure 400 {object} handler.Response "请求参数错误"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/ai/files [post]
+// @Router /auth/ai/files [post]
 func AnalyzeFiles(c *gin.Context) {
 	var request AnalyzeFilesRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

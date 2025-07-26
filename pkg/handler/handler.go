@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type Response struct {
@@ -14,7 +12,7 @@ type Response struct {
 
 func Respond(c *gin.Context, code int, message any, data interface{}) {
 	res := gin.H{
-		"status":  http.StatusBadRequest,
+		"status":  code,
 		"message": message,
 	}
 
@@ -24,8 +22,4 @@ func Respond(c *gin.Context, code int, message any, data interface{}) {
 	}
 
 	c.JSON(code, res)
-}
-
-func LogError(c *gin.Context, message string) {
-	c.Error(fmt.Errorf(message))
 }

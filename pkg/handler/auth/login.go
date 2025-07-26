@@ -6,16 +6,14 @@ import (
 	"time"
 
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/config"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/database"
 	"github.com/EtaPanel-dev/EtaPanel/core/pkg/handler"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/middleware"
+	"github.com/EtaPanel-dev/EtaPanel/core/pkg/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-type Claims struct {
-	Username string `json:"username"`
-	jwt.RegisteredClaims
-}
 
 // LoginRequest 登录请求参数
 type LoginRequest struct {
@@ -40,7 +38,7 @@ type LoginResponse struct {
 // @Failure 400 {object} handler.Response "请求参数错误"
 // @Failure 401 {object} handler.Response "用户名或密码错误"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/public/login [post]
+// @Router /public/login [post]
 func Login(c *gin.Context) {
 
 	var loginData LoginRequest
@@ -49,14 +47,22 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte("$2a$10$..."), []byte(loginData.Password)) != nil {
-		handler.Respond(c, http.StatusUnauthorized, "密码错误", 401)
+	// 从数据库查找用户
+	var user models.User
+	if err := database.DbConn.Where("username = ?", loginData.Username).First(&user).Error; err != nil {
+		handler.Respond(c, http.StatusUnauthorized, "用户名或密码错误", nil)
 		return
 	}
 
-	// 生成JWT token
+	// 验证密码
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginData.Password)); err != nil {
+		handler.Respond(c, http.StatusUnauthorized, "用户名或密码错误", nil)
+		return
+	}
+
+	// 生成JWT token，使用middleware中的Claims结构
 	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &Claims{
+	claims := &middleware.Claims{
 		Username: loginData.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
@@ -72,8 +78,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	handler.Respond(c, http.StatusOK, gin.H{
-		"token":      tokenString,
-		"expires_at": expirationTime.Unix(),
-	}, "登录成功")
+	response := LoginResponse{
+		Token:     tokenString,
+		ExpiresAt: expirationTime.Unix(),
+	}
+
+	handler.Respond(c, http.StatusOK, "登录成功", response)
 }

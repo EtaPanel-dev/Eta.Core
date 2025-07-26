@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/acme/clients": {
+        "/auth/acme/clients": {
             "get": {
                 "security": [
                     {
@@ -134,7 +134,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/acme/clients/{id}": {
+        "/auth/acme/clients/{id}": {
             "put": {
                 "security": [
                     {
@@ -263,7 +263,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/acme/dns": {
+        "/auth/acme/dns": {
             "get": {
                 "security": [
                     {
@@ -373,7 +373,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/acme/dns/{id}": {
+        "/auth/acme/dns/{id}": {
             "put": {
                 "security": [
                     {
@@ -502,7 +502,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/acme/ssl": {
+        "/auth/acme/ssl": {
             "get": {
                 "security": [
                     {
@@ -612,7 +612,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/acme/ssl/{id}": {
+        "/auth/acme/ssl/{id}": {
             "put": {
                 "security": [
                     {
@@ -764,79 +764,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/ai/execute": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "直接执行预定义的数据库操作工具，支持批量调用",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AI工具链"
-                ],
-                "summary": "直接执行数据库工具调用",
-                "parameters": [
-                    {
-                        "description": "工具调用请求",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ai.ToolCallRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "执行成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ai.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/ai.ToolCallResult"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "执行失败",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/ai/files": {
+        "/auth/ai/files": {
             "post": {
                 "security": [
                     {
@@ -911,61 +839,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/ai/health": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "检查AI服务和相关组件的健康状态",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AI工具链"
-                ],
-                "summary": "AI服务健康状态检查",
-                "responses": {
-                    "200": {
-                        "description": "服务健康",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ai.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "status": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "服务不可用",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/ai/log": {
+        "/auth/ai/log": {
             "post": {
                 "security": [
                     {
@@ -1040,14 +914,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/ai/query": {
+        "/auth/change-password": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "使用自然语言与SQLite数据库进行交互，AI会自动将自然语言转换为相应的数据库操作",
+                "description": "修改当前用户密码",
                 "consumes": [
                     "application/json"
                 ],
@@ -1055,190 +929,49 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AI工具链"
+                    "认证"
                 ],
-                "summary": "自然语言数据库查询",
+                "summary": "修改密码",
                 "parameters": [
                     {
-                        "description": "查询请求",
-                        "name": "request",
+                        "description": "密码修改信息",
+                        "name": "passwordData",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ai.QueryRequest"
+                            "$ref": "#/definitions/auth.ChangePasswordRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "查询成功",
+                        "description": "密码修改成功",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ai.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "response": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/handler.Response"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
+                            "$ref": "#/definitions/handler.Response"
                         }
                     },
                     "401": {
-                        "description": "未授权",
+                        "description": "旧密码错误",
                         "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
+                            "$ref": "#/definitions/handler.Response"
                         }
                     },
                     "500": {
                         "description": "服务器内部错误",
                         "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
+                            "$ref": "#/definitions/handler.Response"
                         }
                     }
                 }
             }
         },
-        "/api/auth/ai/tools": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取所有可用的数据库操作工具及其详细信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AI工具链"
-                ],
-                "summary": "获取可用的数据库工具列表",
-                "responses": {
-                    "200": {
-                        "description": "获取成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ai.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "count": {
-                                                    "type": "integer"
-                                                },
-                                                "tools": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "$ref": "#/definitions/ai.ToolDefinition"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/ai/tools/{name}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "根据工具名称获取特定数据库工具的详细配置和参数信息",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AI工具链"
-                ],
-                "summary": "获取特定工具的详细信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "工具名称",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "获取成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/ai.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/ai.ToolDefinition"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "工具名称未提供",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "工具不存在",
-                        "schema": {
-                            "$ref": "#/definitions/ai.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/crontab": {
+        "/auth/crontab": {
             "get": {
                 "security": [
                     {
@@ -1348,7 +1081,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/crontab/{id}": {
+        "/auth/crontab/{id}": {
             "put": {
                 "security": [
                     {
@@ -1477,7 +1210,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/crontab/{id}/toggle": {
+        "/auth/crontab/{id}/toggle": {
             "post": {
                 "security": [
                     {
@@ -1538,7 +1271,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files": {
+        "/auth/files": {
             "get": {
                 "security": [
                     {
@@ -1675,7 +1408,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/compress": {
+        "/auth/files/compress": {
             "post": {
                 "security": [
                     {
@@ -1752,7 +1485,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/content": {
+        "/auth/files/content": {
             "get": {
                 "security": [
                     {
@@ -1899,7 +1632,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/copy": {
+        "/auth/files/copy": {
             "post": {
                 "security": [
                     {
@@ -1970,7 +1703,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/download": {
+        "/auth/files/download": {
             "get": {
                 "security": [
                     {
@@ -2031,7 +1764,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/extract": {
+        "/auth/files/extract": {
             "post": {
                 "security": [
                     {
@@ -2102,7 +1835,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/mkdir": {
+        "/auth/files/mkdir": {
             "post": {
                 "security": [
                     {
@@ -2170,7 +1903,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/move": {
+        "/auth/files/move": {
             "post": {
                 "security": [
                     {
@@ -2241,7 +1974,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/permissions": {
+        "/auth/files/permissions": {
             "get": {
                 "security": [
                     {
@@ -2397,7 +2130,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/files/upload": {
+        "/auth/files/upload": {
             "post": {
                 "security": [
                     {
@@ -2465,7 +2198,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/config": {
+        "/auth/nginx/config": {
             "get": {
                 "security": [
                     {
@@ -2572,7 +2305,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/config/reset": {
+        "/auth/nginx/config/reset": {
             "post": {
                 "security": [
                     {
@@ -2612,7 +2345,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/reload": {
+        "/auth/nginx/reload": {
             "post": {
                 "security": [
                     {
@@ -2652,7 +2385,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/restart": {
+        "/auth/nginx/restart": {
             "post": {
                 "security": [
                     {
@@ -2692,7 +2425,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/sites": {
+        "/auth/nginx/sites": {
             "get": {
                 "security": [
                     {
@@ -2808,7 +2541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/sites/{id}": {
+        "/auth/nginx/sites/{id}": {
             "put": {
                 "security": [
                     {
@@ -2937,7 +2670,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/sites/{id}/toggle": {
+        "/auth/nginx/sites/{id}/toggle": {
             "post": {
                 "security": [
                     {
@@ -2998,7 +2731,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/status": {
+        "/auth/nginx/status": {
             "get": {
                 "security": [
                     {
@@ -3050,7 +2783,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/nginx/test": {
+        "/auth/nginx/test": {
             "post": {
                 "security": [
                     {
@@ -3096,7 +2829,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system": {
+        "/auth/system": {
             "get": {
                 "security": [
                     {
@@ -3148,7 +2881,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system/cpu": {
+        "/auth/system/cpu": {
             "get": {
                 "security": [
                     {
@@ -3200,7 +2933,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system/disk": {
+        "/auth/system/disk": {
             "get": {
                 "security": [
                     {
@@ -3255,7 +2988,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system/memory": {
+        "/auth/system/memory": {
             "get": {
                 "security": [
                     {
@@ -3307,7 +3040,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system/network": {
+        "/auth/system/network": {
             "get": {
                 "security": [
                     {
@@ -3359,7 +3092,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system/process/kill": {
+        "/auth/system/process/kill": {
             "post": {
                 "security": [
                     {
@@ -3430,7 +3163,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/system/processes": {
+        "/auth/system/processes": {
             "get": {
                 "security": [
                     {
@@ -3490,7 +3223,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/public/login": {
+        "/public/login": {
             "post": {
                 "description": "通过用户名和密码进行登录，返回JWT token",
                 "consumes": [
@@ -3556,24 +3289,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "ai.APIResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "响应数据"
-                },
-                "error": {
-                    "description": "错误信息",
-                    "type": "string",
-                    "example": ""
-                },
-                "success": {
-                    "description": "操作是否成功",
-                    "type": "boolean",
-                    "example": true
-                }
-            }
-        },
         "ai.AnalyzeFilesRequest": {
             "type": "object",
             "required": [
@@ -3594,76 +3309,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "logContent": {
-                    "description": "要分析的日志内容",
                     "type": "string",
                     "example": "[ERROR] 2024-01-01 12:00:00 Database connection failed"
                 }
             }
         },
-        "ai.FunctionDefinition": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "parameters": {
-                    "type": "object",
-                    "additionalProperties": true
-                }
-            }
-        },
-        "ai.QueryRequest": {
+        "auth.ChangePasswordRequest": {
             "type": "object",
             "required": [
-                "query"
+                "new_password",
+                "old_password"
             ],
             "properties": {
-                "query": {
-                    "description": "自然语言查询内容",
+                "new_password": {
                     "type": "string",
-                    "example": "连接到数据库 ./data.db 并显示所有表"
-                }
-            }
-        },
-        "ai.ToolCallRequest": {
-            "type": "object",
-            "required": [
-                "tool_calls"
-            ],
-            "properties": {
-                "tool_calls": {
-                    "description": "JSON格式的工具调用数组",
+                    "minLength": 6,
+                    "example": "newpassword123"
+                },
+                "old_password": {
                     "type": "string",
-                    "example": "[{\"id\":\"call_1\",\"type\":\"function\",\"function\":{\"name\":\"connect_sqlite_database\",\"arguments\":{\"database_path\":\"./test.db\"}}}]"
-                }
-            }
-        },
-        "ai.ToolCallResult": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "result": {},
-                "success": {
-                    "type": "boolean"
-                },
-                "tool_call_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "ai.ToolDefinition": {
-            "type": "object",
-            "properties": {
-                "function": {
-                    "$ref": "#/definitions/ai.FunctionDefinition"
-                },
-                "type": {
-                    "type": "string"
+                    "example": "oldpassword"
                 }
             }
         },

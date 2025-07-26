@@ -24,6 +24,7 @@ func (u *User) HashPassword() error {
 	return nil
 }
 
-func (u *User) BeforeCreate(tx *gorm.DB) error {
-	return u.HashPassword()
+// CheckPassword 验证密码
+func (u *User) CheckPassword(password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }

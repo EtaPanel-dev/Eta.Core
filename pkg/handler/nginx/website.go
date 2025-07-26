@@ -19,7 +19,7 @@ import (
 // @Success 200 {object} handler.Response{data=[]models.NginxSite} "获取成功"
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/nginx/sites [get]
+// @Router /auth/nginx/sites [get]
 func GetNginxSites(c *gin.Context) {
 	sites, err := getNginxSites()
 	if err != nil {
@@ -43,7 +43,7 @@ func GetNginxSites(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 409 {object} handler.Response "域名已存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/nginx/sites [post]
+// @Router /auth/nginx/sites [post]
 func CreateNginxSite(c *gin.Context) {
 	var site models.NginxSite
 	if err := c.ShouldBindJSON(&site); err != nil {
@@ -89,7 +89,7 @@ func CreateNginxSite(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "网站不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/nginx/sites/{id} [put]
+// @Router /auth/nginx/sites/{id} [put]
 func UpdateNginxSite(c *gin.Context) {
 	siteID := c.Param("id")
 	id, err := strconv.Atoi(siteID)
@@ -127,7 +127,7 @@ func UpdateNginxSite(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "网站不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/nginx/sites/{id} [delete]
+// @Router /auth/nginx/sites/{id} [delete]
 func DeleteNginxSite(c *gin.Context) {
 	siteID := c.Param("id")
 	id, err := strconv.Atoi(siteID)
@@ -157,7 +157,7 @@ func DeleteNginxSite(c *gin.Context) {
 // @Failure 401 {object} handler.Response "未授权"
 // @Failure 404 {object} handler.Response "网站不存在"
 // @Failure 500 {object} handler.Response "服务器内部错误"
-// @Router /api/auth/nginx/sites/{id}/toggle [post]
+// @Router /auth/nginx/sites/{id}/toggle [post]
 func ToggleNginxSite(c *gin.Context) {
 	siteID := c.Param("id")
 	id, err := strconv.Atoi(siteID)

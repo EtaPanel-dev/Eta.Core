@@ -8,11 +8,12 @@ import (
 )
 
 type Config struct {
-	Server    ServerConfig    `toml:"server"`
-	Database  DatabaseConfig  `toml:"database"`
-	JWT       JWTConfig       `toml:"jwt"`
-	IPFS      IPFSConfig      `toml:"ipfs"`
-	Injective InjectiveConfig `json:"injective" toml:"injective"` // Injective链配置
+	Server       ServerConfig    `toml:"server"`
+	Database     DatabaseConfig  `toml:"database"`
+	JWT          JWTConfig       `toml:"jwt"`
+	IPFS         IPFSConfig      `toml:"ipfs"`
+	Injective    InjectiveConfig `json:"injective" toml:"injective"` // Injective链配置
+	DockerConfig DockerConfig    `json:"docker" toml:"docker"`       // Docker配置
 }
 
 type ServerConfig struct {
@@ -40,6 +41,24 @@ type InjectiveConfig struct {
 	GRPCUrl     string `json:"grpc_url"`
 	PrivateKey  string `json:"private_key"`
 	GasPrice    string `json:"gas_price"`
+}
+
+// DockerConfig Docker配置
+type DockerConfig struct {
+	Enabled         bool             `json:"enabled"`
+	SocketPath      string           `json:"socket_path"`
+	APIVersion      string           `json:"api_version"`
+	Registries      []DockerRegistry `json:"registries"`
+	DefaultRegistry string           `json:"default_registry"`
+}
+
+// DockerRegistry Docker镜像仓库配置
+type DockerRegistry struct {
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+	Default  bool   `json:"default"`
 }
 
 // AppConfig 全局应用配置
@@ -90,6 +109,27 @@ func createDefaultConfig() {
 			GRPCUrl:     "http://localhost:9090",
 			PrivateKey:  "",
 			GasPrice:    "0.025inj",
+		},
+		DockerConfig: DockerConfig{
+			Enabled:    true,
+			SocketPath: "/var/run/docker.sock",
+			APIVersion: "1.41",
+			Registries: []DockerRegistry{
+				{
+					Name:    "Docker Hub",
+					URL:     "https://registry-1.docker.io",
+					Default: true,
+				},
+				{
+					Name: "阿里云镜像",
+					URL:  "https://registry.cn-hangzhou.aliyuncs.com",
+				},
+				{
+					Name: "网易云镜像",
+					URL:  "https://hub-mirror.c.163.com",
+				},
+			},
+			DefaultRegistry: "https://registry-1.docker.io",
 		},
 	}
 
